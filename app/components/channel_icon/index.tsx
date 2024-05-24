@@ -11,9 +11,11 @@ import {changeOpacity, makeStyleSheetFromTheme} from '@utils/theme';
 import {typography} from '@utils/typography';
 
 import DmAvatar from './dm_avatar';
+import GmAvatar from './gm_avatar';
 
 type ChannelIconProps = {
     hasDraft?: boolean;
+    id: string;
     isActive?: boolean;
     isArchived?: boolean;
     isOnCenterBg?: boolean;
@@ -87,7 +89,7 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
 });
 
 const ChannelIcon = ({
-    hasDraft = false, isActive = false, isArchived = false,
+    hasDraft = false, id, isActive = false, isArchived = false,
     isOnCenterBg = false, isUnread = false, isMuted = false,
     membersCount = 0, name,
     shared, size = 12, style, testID, type,
@@ -188,12 +190,26 @@ const ChannelIcon = ({
     } else if (type === General.PRIVATE_CHANNEL) {
         icon = (
             <CompassIcon
-                name='lock-outline'
+                name='group-avatar'
                 style={[
+                    {
+                        backgroundColor: changeOpacity(theme.sidebarText, 0.16),
+                        borderRadius: size,
+                    },
+                    unreadGroupBox,
+                    activeGroupBox,
                     commonIconStyles,
                     {left: 0.5},
                 ]}
                 testID={`${testID}.private`}
+            />
+        );
+    } else if (type === General.GM_CHANNEL && size >= 48) {
+        icon = (
+            <GmAvatar
+                channelId={id}
+                style={commonStyles}
+                size={size}
             />
         );
     } else if (type === General.GM_CHANNEL) {

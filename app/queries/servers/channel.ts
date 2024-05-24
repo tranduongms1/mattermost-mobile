@@ -191,7 +191,9 @@ export const queryAllChannelsInfoForTeam = (database: Database, teamId: string) 
 };
 
 export const queryAllMyChannel = (database: Database) => {
-    return database.get<MyChannelModel>(MY_CHANNEL).query();
+    return database.get<MyChannelModel>(MY_CHANNEL).query(
+        Q.on(CHANNEL, Q.where('name', Q.notEq(General.DEFAULT_CHANNEL))),
+    );
 };
 
 export const queryAllMyChannelsForTeam = (database: Database, teamId: string) => {
@@ -586,7 +588,7 @@ export const observeJoinedChannelsByTerm = (database: Database, term: string, ta
     }
     return database.get<MyChannelModel>(MY_CHANNEL).query(
         Q.unsafeSqlQuery(`SELECT DISTINCT my.* FROM ${MY_CHANNEL} my
-        INNER JOIN ${CHANNEL} c ON c.id=my.id AND c.delete_at=0 AND c.team_id !='' AND ${displayname}
+        INNER JOIN ${CHANNEL} c ON c.id=my.id AND c.name !='${General.DEFAULT_CHANNEL}' AND c.delete_at=0 AND c.team_id !='' AND ${displayname}
         ORDER BY my.last_viewed_at DESC
         LIMIT ${take}`),
     ).observe();

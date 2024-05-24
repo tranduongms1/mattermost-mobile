@@ -107,6 +107,16 @@ export const queryUsersByIdsOrUsernames = (database: Database, ids: string[], us
         ));
 };
 
+export const observeContacts = (database: Database) => {
+    const users = database.get<UserModel>(USER).query(Q.where('is_bot', Q.notEq(1))).observe();
+    const getProfiles = (list: UserModel[]) => {
+        return of$(list.map<UserProfile>((item) => item._raw as any));
+    };
+    return users.pipe(
+        switchMap(getProfiles),
+    );
+};
+
 export const observeUserIsTeamAdmin = (database: Database, userId: string, teamId: string) => {
     const id = `${teamId}-${userId}`;
     return database.get<TeamMembershipModel>(TEAM_MEMBERSHIP).query(

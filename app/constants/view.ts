@@ -3,8 +3,8 @@
 
 import {Platform} from 'react-native';
 
-export const BOTTOM_TAB_HEIGHT = 52;
-export const BOTTOM_TAB_ICON_SIZE = 31.2;
+export const BOTTOM_TAB_HEIGHT = 60;
+export const BOTTOM_TAB_ICON_SIZE = 24;
 export const PROFILE_PICTURE_SIZE = 32;
 export const PROFILE_PICTURE_EMOJI_SIZE = 28;
 

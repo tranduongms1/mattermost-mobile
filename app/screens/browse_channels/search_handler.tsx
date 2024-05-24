@@ -314,12 +314,14 @@ export default function SearchHandler(props: Props) {
         }
     }, [visibleChannels.length >= MIN_CHANNELS_LOADED, loading, isSearch]);
 
+    const displayChannels = visibleChannels.filter((c) => c.name !== General.DEFAULT_CHANNEL);
+
     return (
         <BrowseChannels
             {...passProps}
             currentTeamId={currentTeamId}
             changeChannelType={changeChannelType}
-            channels={visibleChannels}
+            channels={displayChannels}
             loading={loading}
             onEndReached={onEndReached}
             searchChannels={doSearchChannels}

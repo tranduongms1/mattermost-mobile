@@ -164,6 +164,7 @@ const ChannelItem = ({
     const containerStyle = useMemo(() => [
         styles.container,
         isOnHome && HOME_PADDING,
+        isOnHome && {paddingVertical: 8},
         showActive && styles.activeItem,
         showActive && isOnHome && {
             paddingLeft: HOME_PADDING.paddingLeft - styles.activeItem.borderLeftWidth,
@@ -179,6 +180,7 @@ const ChannelItem = ({
             >
                 <ChannelIcon
                     hasDraft={hasDraft}
+                    id={channel.id}
                     isActive={isTablet && isActive}
                     isOnCenterBg={isOnCenterBg}
                     isUnread={isBolded}
@@ -186,7 +188,7 @@ const ChannelItem = ({
                     membersCount={membersCount}
                     name={channel.name}
                     shared={channel.shared}
-                    size={24}
+                    size={isOnHome ? 48 : 24}
                     type={channel.type}
                     isMuted={isMuted}
                     style={styles.icon}

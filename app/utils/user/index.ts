@@ -60,7 +60,7 @@ export function getFullName(user: UserProfile | UserModel): string {
     }
 
     if (firstName && lastName) {
-        return `${firstName} ${lastName}`;
+        return `${lastName} ${firstName}`;
     } else if (firstName) {
         return firstName;
     } else if (lastName) {

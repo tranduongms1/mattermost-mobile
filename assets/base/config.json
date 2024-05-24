@@ -1,10 +1,10 @@
 {
-    "DefaultServerUrl": "",
-    "DefaultServerName": "",
+    "DefaultServerUrl": "https://egsoft.vn",
+    "DefaultServerName": "Emotion",
     "TestServerUrl": "http://localhost:8065",
-    "AutoSelectServerUrl": false,
+    "AutoSelectServerUrl": true,
 
-    "WebsiteURL": "https://mattermost.com",
+    "WebsiteURL": "https://egsoft.vn",
     "ServerNoticeURL": "https://github.com/mattermost/mattermost-server/blob/master/NOTICE.txt",
     "MobileNoticeURL": "https://github.com/mattermost/mattermost-mobile/blob/master/NOTICE.txt",
 
