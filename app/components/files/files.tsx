@@ -105,7 +105,7 @@ const Files = ({canDownloadFiles, failed, filesInfo, isReplyPost, layoutWidth, l
                         publicLinkEnabled={publicLinkEnabled}
                         updateFileForGallery={updateFileForGallery}
                         wrapperWidth={layoutWidth || (getViewPortWidth(isReplyPost, isTablet) - 6)}
-                        inViewPort={inViewPort}
+                        inViewPort={location === 'Issue' || inViewPort}
                     />
                 </View>
             );

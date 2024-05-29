@@ -110,6 +110,9 @@ const PostOptions = ({
                         post={post}
                     />
                 }
+                {post.type &&
+                    null
+                }
                 {shouldRenderFollow &&
                     <FollowThreadOption
                         bottomSheetId={Screens.POST_OPTIONS}
@@ -157,7 +160,7 @@ const PostOptions = ({
                     canDelete={canDelete}
                 />
                 }
-                {canDelete &&
+                {canDelete && canEdit &&
                 <DeletePostOption
                     bottomSheetId={Screens.POST_OPTIONS}
                     combinedPost={combinedPost}

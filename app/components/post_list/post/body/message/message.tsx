@@ -9,7 +9,7 @@ import Markdown from '@components/markdown';
 import {SEARCH} from '@constants/screens';
 import {useShowMoreAnimatedStyle} from '@hooks/show_more';
 import {getMarkdownTextStyles, getMarkdownBlockStyles} from '@utils/markdown';
-import {makeStyleSheetFromTheme} from '@utils/theme';
+import {changeOpacity, makeStyleSheetFromTheme} from '@utils/theme';
 import {typography} from '@utils/typography';
 
 import ShowMoreButton from './show_more_button';
@@ -40,7 +40,11 @@ const EMPTY_HIGHLIGHT_KEYS: HighlightWithoutNotificationKey[] = [];
 const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
     return {
         messageContainer: {
-            width: '100%',
+            alignSelf: 'flex-start',
+            backgroundColor: changeOpacity(theme.centerChannelColor, 0.08),
+            borderRadius: 12,
+            maxWidth: '100%',
+            padding: 12,
         },
         reply: {
             paddingRight: 10,

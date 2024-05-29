@@ -24,6 +24,7 @@ import {preventDoubleTap} from '@utils/tap';
 import {changeOpacity, makeStyleSheetFromTheme} from '@utils/theme';
 import {typography} from '@utils/typography';
 
+import Actions from './actions';
 import QuickActions, {MARGIN, SEPARATOR_HEIGHT} from './quick_actions';
 
 import type {HeaderRightButton} from '@components/navigation_header/header';
@@ -243,6 +244,11 @@ const ChannelHeader = ({
             />
             <View style={contextStyle}>
                 <RoundedHeaderContext/>
+                <Actions
+                    channelId={channelId}
+                    channelType={channelType}
+                    displayName={displayName}
+                />
             </View>
         </>
     );

@@ -16,6 +16,8 @@ import Acknowledgements from './acknowledgements';
 import AddMembers from './add_members';
 import Content from './content';
 import Failed from './failed';
+import Issue from './issue';
+import IssueUpdated from './issue_updated';
 import Message from './message';
 import Reactions from './reactions';
 
@@ -46,17 +48,21 @@ type BodyProps = {
 const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
     return {
         ackAndReactionsContainer: {
+            position: 'absolute',
             flex: 1,
             flexDirection: 'row',
             flexWrap: 'wrap',
             alignContent: 'flex-start',
-            marginTop: 12,
+            bottom: 0,
+            left: 12,
         },
         messageBody: {
             paddingVertical: 2,
             flex: 1,
         },
-        messageContainer: {width: '100%'},
+        messageBodyPadding: {
+            paddingBottom: 30,
+        },
         replyBar: {
             backgroundColor: theme.centerChannelColor,
             opacity: 0.1,
@@ -135,6 +141,28 @@ const Body = ({
                 defaultMessage='(message deleted)'
             />
         );
+    } else if (post.type === 'custom_issue') {
+        message = (
+            <Issue
+                location={location}
+                post={post}
+                theme={theme}
+            />
+        );
+    } else if (post.type === 'custom_issue_updated') {
+        message = (
+            <IssueUpdated
+                highlight={highlight}
+                isEdited={isEdited}
+                isPendingOrFailed={isPendingOrFailed}
+                isReplyPost={isReplyPost}
+                layoutWidth={layoutWidth}
+                location={location}
+                post={post}
+                searchPatterns={searchPatterns}
+                theme={theme}
+            />
+        );
     } else if (isPostAddChannelMember) {
         message = (
             <AddMembers
@@ -171,7 +199,7 @@ const Body = ({
     const reactionsVisible = hasReactions && showAddReaction;
     if (!hasBeenDeleted) {
         body = (
-            <View style={style.messageBody}>
+            <View style={[style.messageBody, (acknowledgementsVisible || reactionsVisible) && style.messageBodyPadding]}>
                 {message}
                 {hasContent &&
                 <Content
@@ -182,7 +210,7 @@ const Body = ({
                     theme={theme}
                 />
                 }
-                {hasFiles &&
+                {hasFiles && location !== 'IssueList' &&
                 <Files
                     failed={isFailed}
                     layoutWidth={layoutWidth}

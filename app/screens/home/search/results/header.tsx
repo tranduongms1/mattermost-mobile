@@ -153,7 +153,7 @@ const Header = ({
                             />
                         </View>
                     )}
-                    {teams.length > 1 && (
+                    {false && teams.length > 1 && (
                         <TeamPickerIcon
                             size={32}
                             divider={true}

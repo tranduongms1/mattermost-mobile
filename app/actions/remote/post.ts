@@ -13,7 +13,7 @@ import DatabaseManager from '@database/manager';
 import {filterPostsInOrderedArray} from '@helpers/api/post';
 import {getNeededAtMentionedUsernames} from '@helpers/api/user';
 import NetworkManager from '@managers/network_manager';
-import {getMyChannel, prepareMissingChannelsForAllTeams, queryAllMyChannel} from '@queries/servers/channel';
+import {getChannelById, getMyChannel, prepareMissingChannelsForAllTeams, queryAllMyChannel} from '@queries/servers/channel';
 import {queryAllCustomEmojis} from '@queries/servers/custom_emoji';
 import {getPostById, getRecentPostsInChannel} from '@queries/servers/post';
 import {getCurrentUserId, getCurrentChannelId} from '@queries/servers/system';
@@ -351,7 +351,8 @@ export async function fetchPosts(serverUrl: string, channelId: string, page = 0,
         }
         const {operator, database} = DatabaseManager.getServerDatabaseAndOperator(serverUrl);
         const client = NetworkManager.getClient(serverUrl);
-        const isCRTEnabled = await getIsCRTEnabled(database);
+        const channel = await getChannelById(database, channelId);
+        const isCRTEnabled = channel?.name === General.DEFAULT_CHANNEL ? true : await getIsCRTEnabled(database);
         const data = await client.getPosts(channelId, page, perPage, isCRTEnabled, isCRTEnabled);
         const result = processPostsFetched(data);
         if (!fetchOnly && result.posts.length) {
@@ -400,7 +401,8 @@ export async function fetchPostsBefore(serverUrl: string, channelId: string, pos
         }
         const client = NetworkManager.getClient(serverUrl);
         const {database, operator} = DatabaseManager.getServerDatabaseAndOperator(serverUrl);
-        const isCRTEnabled = await getIsCRTEnabled(database);
+        const channel = await getChannelById(database, channelId);
+        const isCRTEnabled = channel?.name === General.DEFAULT_CHANNEL ? true : await getIsCRTEnabled(database);
         const data = await client.getPostsBefore(channelId, postId, 0, perPage, isCRTEnabled, isCRTEnabled);
         const result = processPostsFetched(data);
 

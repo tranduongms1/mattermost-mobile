@@ -87,7 +87,7 @@ const UnreadCategories = ({onChannelSwitch, onlyUnreads, unreadChannels, unreadT
             }
             <FlatList
                 contentContainerStyle={containerStyle}
-                data={unreadChannels}
+                data={unreadChannels.filter((c) => c.name !== 'town-square')}
                 renderItem={renderItem}
                 keyExtractor={extractKey}
                 ListEmptyComponent={EmptyState}

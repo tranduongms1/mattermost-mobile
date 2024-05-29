@@ -168,17 +168,7 @@ const ProfileForm = ({
 
     return (
         <>
-            {hasDisabledFields && <DisabledFields isTablet={isTablet}/>}
-            <Field
-                fieldKey='firstName'
-                fieldRef={firstNameRef}
-                isDisabled={userProfileFields.firstName.isDisabled}
-                label={formatMessage(FIELDS.firstName)}
-                testID='edit_profile_form.first_name'
-                value={userInfo.firstName}
-                {...fieldConfig}
-            />
-            <View style={styles.separator}/>
+            {false && hasDisabledFields && <DisabledFields isTablet={isTablet}/>}
             <Field
                 fieldKey='lastName'
                 fieldRef={lastNameRef}
@@ -190,11 +180,21 @@ const ProfileForm = ({
             />
             <View style={styles.separator}/>
             <Field
+                fieldKey='firstName'
+                fieldRef={firstNameRef}
+                isDisabled={userProfileFields.firstName.isDisabled}
+                label={formatMessage(FIELDS.firstName)}
+                testID='edit_profile_form.first_name'
+                value={userInfo.firstName}
+                {...fieldConfig}
+            />
+            <View style={styles.separator}/>
+            <Field
                 fieldKey='username'
                 fieldRef={usernameRef}
                 error={errorMessage}
                 isDisabled={userProfileFields.username.isDisabled}
-                label={formatMessage(FIELDS.username)}
+                label='Số điện thoại'
                 maxLength={22}
                 testID='edit_profile_form.username'
                 value={userInfo.username}
@@ -230,7 +230,6 @@ const ProfileForm = ({
                 fieldKey='position'
                 fieldRef={positionRef}
                 isDisabled={userProfileFields.position.isDisabled}
-                isOptional={true}
                 label={formatMessage(FIELDS.position)}
                 maxLength={128}
                 {...fieldConfig}

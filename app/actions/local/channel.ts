@@ -171,6 +171,7 @@ export async function markChannelAsViewed(serverUrl: string, channelId: string, 
         member.prepareUpdate((m) => {
             m.isUnread = false;
             m.mentionsCount = 0;
+            m.messageCount = 0;
             m.manuallyUnread = false;
             if (!onlyCounts) {
                 m.viewedAt = member.lastViewedAt;
