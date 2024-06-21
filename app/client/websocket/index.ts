@@ -2,6 +2,7 @@
 // See LICENSE.txt for license information.
 
 import {type ClientHeaders, getOrCreateWebSocketClient, type WebSocketClientInterface, WebSocketReadyState} from '@mattermost/react-native-network-client';
+import Emittery from 'emittery';
 import {Platform} from 'react-native';
 
 import {WebsocketEvents} from '@constants';
@@ -16,7 +17,7 @@ const WEBSOCKET_TIMEOUT = toMilliseconds({seconds: 30});
 const MIN_WEBSOCKET_RETRY_TIME = toMilliseconds({seconds: 3});
 const MAX_WEBSOCKET_RETRY_TIME = toMilliseconds({minutes: 5});
 
-export default class WebSocketClient {
+export default class WebSocketClient extends Emittery {
     private conn?: WebSocketClientInterface;
     private connectionTimeout: NodeJS.Timeout | undefined;
     private connectionId: string;
@@ -48,6 +49,7 @@ export default class WebSocketClient {
     private hasReliablyReconnect = false;
 
     constructor(serverUrl: string, token: string, lastDisconnect = 0) {
+        super();
         this.connectionId = '';
         this.token = token;
         this.responseSequence = 1;
@@ -304,6 +306,7 @@ export default class WebSocketClient {
 
                 this.serverSequence = msg.seq + 1;
                 this.eventCallback(msg);
+                this.emit(msg.event, msg.data);
             }
         });
 

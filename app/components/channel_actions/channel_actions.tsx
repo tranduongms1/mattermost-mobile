@@ -71,7 +71,7 @@ const ChannelActions = ({
                 testID={testID}
             />
             <View style={styles.separator}/>
-            {isDM &&
+            {false && isDM &&
                 <SetHeaderBox
                     channelId={channelId}
                     inModal={inModal}

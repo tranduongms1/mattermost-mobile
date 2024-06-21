@@ -30,6 +30,7 @@ type Props = {
     membersCount: number;
     isUnread: boolean;
     mentionsCount: number;
+    messageCount: number;
     onPress: (channel: ChannelModel | Channel) => void;
     teamDisplayName?: string;
     testID?: string;
@@ -113,6 +114,7 @@ const ChannelItem = ({
     membersCount,
     isUnread,
     mentionsCount,
+    messageCount,
     onPress,
     teamDisplayName = '',
     testID,
@@ -129,7 +131,7 @@ const ChannelItem = ({
     const channelName = (showChannelName && !isDMorGM(channel)) ? channel.name : '';
 
     // Make it bolded if it has unreads or mentions
-    const isBolded = isUnread || mentionsCount > 0;
+    const isBolded = isUnread || mentionsCount > 0 || messageCount > 0;
     const showActive = isActive && isTablet;
 
     const teammateId = (channel.type === General.DM_CHANNEL) ? getUserIdFromChannelName(currentUserId, channel.name) : undefined;
@@ -164,6 +166,7 @@ const ChannelItem = ({
     const containerStyle = useMemo(() => [
         styles.container,
         isOnHome && HOME_PADDING,
+        isOnHome && {paddingVertical: 8},
         showActive && styles.activeItem,
         showActive && isOnHome && {
             paddingLeft: HOME_PADDING.paddingLeft - styles.activeItem.borderLeftWidth,
@@ -179,6 +182,7 @@ const ChannelItem = ({
             >
                 <ChannelIcon
                     hasDraft={hasDraft}
+                    id={channel.id}
                     isActive={isTablet && isActive}
                     isOnCenterBg={isOnCenterBg}
                     isUnread={isBolded}
@@ -186,7 +190,7 @@ const ChannelItem = ({
                     membersCount={membersCount}
                     name={channel.name}
                     shared={channel.shared}
-                    size={24}
+                    size={isOnHome ? 48 : 24}
                     type={channel.type}
                     isMuted={isMuted}
                     style={styles.icon}
@@ -202,8 +206,8 @@ const ChannelItem = ({
                 />
                 <View style={styles.filler}/>
                 <Badge
-                    visible={mentionsCount > 0}
-                    value={mentionsCount}
+                    visible={mentionsCount > 0 || messageCount > 0}
+                    value={messageCount || mentionsCount}
                     style={[styles.badge, isMuted && styles.mutedBadge, isOnCenterBg && styles.badgeOnCenterBg]}
                 />
                 {hasCall &&

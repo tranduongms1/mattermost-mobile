@@ -112,7 +112,8 @@ const enhanced = withObservables([], ({combinedPost, post, showAddReaction, sour
     );
 
     const canReply = combineLatest([channelIsArchived, channelIsReadOnly, canPostPermission]).pipe(switchMap(([isArchived, isReadOnly, canPost]) => {
-        return of$(!isArchived && !isReadOnly && sourceScreen !== Screens.THREAD && !isSystemMessage(post) && canPost);
+        const can = sourceScreen === Screens.NEWS || post.rootId || post.type;
+        return of$(can && !isArchived && !isReadOnly && sourceScreen !== Screens.THREAD && !isSystemMessage(post) && canPost);
     }));
 
     const canPin = combineLatest([channelIsArchived, channelIsReadOnly]).pipe(switchMap(([isArchived, isReadOnly]) => {

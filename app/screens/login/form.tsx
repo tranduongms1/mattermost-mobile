@@ -159,7 +159,7 @@ const LoginForm = ({config, extra, serverDisplayName, launchError, launchType, l
         }
 
         if (usernameEnabled) {
-            loginPlaceholders.push(formatMessage({id: 'login.username', defaultMessage: 'Username'}));
+            loginPlaceholders.push('Số điện thoại');
         }
 
         if (ldapEnabled) {

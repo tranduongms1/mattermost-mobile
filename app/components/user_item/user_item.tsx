@@ -76,6 +76,7 @@ const nonThemedStyles = StyleSheet.create({
     rowInfoContainer: {
         flex: 1,
         flexDirection: 'row',
+        alignItems: 'center',
     },
     icon: {
         marginLeft: 4,
@@ -126,7 +127,7 @@ const UserItem = ({
     const customStatusExpired = isCustomStatusExpired(user);
 
     let displayName = displayUsername(user, locale, teammateNameDisplay);
-    const showTeammateDisplay = displayName !== user?.username;
+    const showTeammateDisplay = false;
     if (isCurrentUser) {
         displayName = intl.formatMessage({id: 'channel_header.directchannel.you', defaultMessage: '{displayName} (you)'}, {displayName});
     }

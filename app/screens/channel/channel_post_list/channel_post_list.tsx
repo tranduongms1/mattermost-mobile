@@ -97,7 +97,7 @@ const ChannelPostList = ({
         <PostList
             channelId={channelId}
             contentContainerStyle={[contentContainerStyle, !isCRTEnabled && styles.containerStyle]}
-            isCRTEnabled={isCRTEnabled}
+            isCRTEnabled={false && isCRTEnabled}
             footer={intro}
             lastViewedAt={lastViewedAt}
             location={Screens.CHANNEL}
@@ -105,7 +105,6 @@ const ChannelPostList = ({
             onEndReached={onEndReached}
             posts={posts}
             shouldShowJoinLeaveMessages={shouldShowJoinLeaveMessages}
-            showMoreMessages={true}
             testID='channel.post_list'
         />
     );

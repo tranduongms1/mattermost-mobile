@@ -51,7 +51,7 @@ const IntroOptions = ({channelId, header, favorite, canAddMembers}: Props) => {
             />
             }
 
-            {header &&
+            {false && header &&
             <SetHeaderBox
                 channelId={channelId}
                 containerStyle={[styles.item, styles.margin]}

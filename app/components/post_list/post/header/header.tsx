@@ -107,7 +107,7 @@ const Header = (props: HeaderProps) => {
                         showCustomStatusEmoji={showCustomStatusEmoji}
                         customStatus={customStatus!}
                     />
-                    {(!isSystemPost || isAutoResponse) &&
+                    {false && (!isSystemPost || isAutoResponse) &&
                     <HeaderTag
                         isAutoResponder={isAutoResponse}
                         isAutomation={isWebHook || author?.isBot}
@@ -128,7 +128,7 @@ const Header = (props: HeaderProps) => {
                             />
                         </View>
                     )}
-                    {!isCRTEnabled && showReply && commentCount > 0 &&
+                    {!isCRTEnabled && (showReply || isReplyPost) &&
                         <HeaderReply
                             commentCount={commentCount}
                             location={location}
@@ -138,7 +138,7 @@ const Header = (props: HeaderProps) => {
                     }
                 </View>
             </View>
-            {Boolean(rootAuthorDisplayName) && location === CHANNEL &&
+            {Boolean(false) && location === CHANNEL &&
             <HeaderCommentedOn
                 locale={currentUser?.locale || DEFAULT_LOCALE}
                 name={rootAuthorDisplayName!}

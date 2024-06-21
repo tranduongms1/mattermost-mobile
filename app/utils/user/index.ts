@@ -60,7 +60,7 @@ export function getFullName(user: UserProfile | UserModel): string {
     }
 
     if (firstName && lastName) {
-        return `${firstName} ${lastName}`;
+        return `${lastName} ${firstName}`;
     } else if (firstName) {
         return firstName;
     } else if (lastName) {
@@ -379,4 +379,10 @@ export const getEmailIntervalTexts = (interval: string) => {
         [Preferences.INTERVAL_NEVER]: {id: 'notification_settings.email.never', defaultMessage: 'Never'},
     };
     return intervalTexts[interval];
+};
+
+export const sortContact = (a: UserProfile, b: UserProfile) => {
+    const name1 = displayUsername(a, 'vi', Preferences.DISPLAY_PREFER_NICKNAME);
+    const name2 = displayUsername(b, 'vi', Preferences.DISPLAY_PREFER_NICKNAME);
+    return name1.localeCompare(name2);
 };
