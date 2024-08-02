@@ -120,6 +120,7 @@ const Post = ({
     const theme = useTheme();
     const isTablet = useIsTablet();
     const styles = getStyleSheet(theme);
+    const fromMe = post.userId === currentUser?.id && location === Screens.CHANNEL;
     const isAutoResponder = fromAutoResponder(post);
     const isPendingOrFailed = isPostPendingOrFailed(post);
     const isFailed = isPostFailed(post);
@@ -155,7 +156,7 @@ const Post = ({
         if (isEphemeral || hasBeenDeleted) {
             removePost(serverUrl, post);
         } else if (isValidSystemMessage && !hasBeenDeleted && !isPendingOrFailed) {
-            if ([Screens.CHANNEL, Screens.PERMALINK].includes(location)) {
+            if ((location === Screens.NEWS) || ([Screens.CHANNEL, Screens.PERMALINK].includes(location) && (post.type || post.rootId))) {
                 const postRootId = post.rootId || post.id;
                 fetchAndSwitchToThread(serverUrl, postRootId);
             }
@@ -242,6 +243,8 @@ const Post = ({
     if (!showPostPriority && hasSameRoot && isConsecutivePost && sameSequence) {
         consecutiveStyle = styles.consecutive;
         postAvatar = <View style={styles.consecutivePostContainer}/>;
+    } else if (fromMe) {
+        postAvatar = <View style={styles.consecutivePostContainer}/>;
     } else {
         postAvatar = (
             <View style={[styles.profilePictureContainer, pendingPostStyle]}>
@@ -303,6 +306,7 @@ const Post = ({
         body = (
             <Body
                 appsEnabled={appsEnabled}
+                fromMe={fromMe}
                 hasFiles={hasFiles}
                 hasReactions={hasReactions}
                 highlight={Boolean(highlightedStyle)}

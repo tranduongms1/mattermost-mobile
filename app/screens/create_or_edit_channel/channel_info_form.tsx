@@ -358,6 +358,7 @@ export default function ChannelInfoForm({
                                 </View>
                             </>
                         )}
+                        {false &&
                         <View
                             style={styles.fieldContainer}
                         >
@@ -390,6 +391,29 @@ export default function ChannelInfoForm({
 
                             />
                         </View>
+                        }
+                        {headerOnly && type === General.GM_CHANNEL &&
+                            <FloatingTextInput
+                                autoCorrect={false}
+                                autoCapitalize={'none'}
+                                blurOnSubmit={false}
+                                disableFullscreenUI={true}
+                                enablesReturnKeyAutomatically={true}
+                                label={labelDisplayName}
+                                placeholder={placeholderDisplayName}
+                                onChangeText={onDisplayNameChange}
+                                maxLength={Channel.MAX_CHANNEL_NAME_LENGTH}
+                                keyboardAppearance={getKeyboardAppearanceFromTheme(theme)}
+                                returnKeyType='next'
+                                showErrorIcon={false}
+                                spellCheck={false}
+                                value={displayName}
+                                ref={nameInput}
+                                containerStyle={styles.fieldContainer}
+                                theme={theme}
+                                onLayout={onLayoutDisplayName}
+                            />
+                        }
                     </View>
                 </TouchableWithoutFeedback>
             </KeyboardAwareScrollView>

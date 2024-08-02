@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
 
 const Files = ({canDownloadFiles, failed, filesInfo, isReplyPost, layoutWidth, location, postId, postProps, publicLinkEnabled}: FilesProps) => {
     const galleryIdentifier = `${postId}-fileAttachments-${location}`;
-    const [inViewPort, setInViewPort] = useState(false);
+    const [inViewPort, setInViewPort] = useState(location === 'Issue');
     const isTablet = useIsTablet();
 
     const {images: imageAttachments, nonImages: nonImageAttachments} = useImageAttachments(filesInfo, publicLinkEnabled);

@@ -5,11 +5,12 @@ import React, {useCallback, useState} from 'react';
 import {type LayoutChangeEvent, ScrollView, useWindowDimensions, View} from 'react-native';
 import Animated from 'react-native-reanimated';
 
+import {Screens} from '@app/constants';
 import Markdown from '@components/markdown';
 import {SEARCH} from '@constants/screens';
 import {useShowMoreAnimatedStyle} from '@hooks/show_more';
 import {getMarkdownTextStyles, getMarkdownBlockStyles} from '@utils/markdown';
-import {makeStyleSheetFromTheme} from '@utils/theme';
+import {changeOpacity, makeStyleSheetFromTheme} from '@utils/theme';
 import {typography} from '@utils/typography';
 
 import ShowMoreButton from './show_more_button';
@@ -40,7 +41,14 @@ const EMPTY_HIGHLIGHT_KEYS: HighlightWithoutNotificationKey[] = [];
 const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
     return {
         messageContainer: {
-            width: '100%',
+            alignSelf: 'flex-start',
+            backgroundColor: changeOpacity(theme.centerChannelColor, 0.08),
+            borderRadius: 12,
+            maxWidth: '100%',
+            padding: 14,
+        },
+        fromMe: {
+            backgroundColor: changeOpacity('#009AF9', 0.16),
         },
         reply: {
             paddingRight: 10,
@@ -65,6 +73,7 @@ const Message = ({currentUser, isHighlightWithoutNotificationLicensed, highlight
     const style = getStyleSheet(theme);
     const blockStyles = getMarkdownBlockStyles(theme);
     const textStyles = getMarkdownTextStyles(theme);
+    const fromMe = post.userId === currentUser?.id && location === Screens.CHANNEL;
 
     const onLayout = useCallback((event: LayoutChangeEvent) => setHeight(event.nativeEvent.layout.height), []);
     const onPress = () => setOpen(!open);
@@ -79,7 +88,7 @@ const Message = ({currentUser, isHighlightWithoutNotificationLicensed, highlight
                     showsHorizontalScrollIndicator={false}
                 >
                     <View
-                        style={[style.messageContainer, (isReplyPost && style.reply), (isPendingOrFailed && style.pendingPost)]}
+                        style={[style.messageContainer, (isReplyPost && style.reply), (isPendingOrFailed && style.pendingPost), fromMe && style.fromMe]}
                         onLayout={onLayout}
                     >
                         <Markdown

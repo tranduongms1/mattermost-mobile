@@ -125,7 +125,7 @@ const withPost = withObservables(
         const hasReplies = observeHasReplies(database, post);//Need to review and understand
 
         const isConsecutivePost = author.pipe(
-            switchMap((user) => of$(Boolean(post && previousPost && !user?.isBot && areConsecutivePosts(post, previousPost)))),
+            switchMap((user) => of$(Boolean(location !== Screens.NEWS && post && previousPost && !user?.isBot && areConsecutivePosts(post, previousPost)))),
             distinctUntilChanged(),
         );
 

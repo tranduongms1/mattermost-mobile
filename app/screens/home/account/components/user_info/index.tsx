@@ -23,6 +23,8 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
             top: 0,
             paddingTop: 22,
             paddingLeft: 20,
+            flexDirection: 'column',
+            alignItems: 'center',
         },
         statusStyle: {
             right: 10,
@@ -51,7 +53,7 @@ const AccountUserInfo = ({user, showFullName, theme}: Props) => {
     const styles = getStyleSheet(theme);
     const nickName = user.nickname ? ` (${user.nickname})` : '';
     const title = `${user.firstName} ${user.lastName}${nickName}`;
-    const userName = `@${user.username}`;
+    const userName = user.username;
     const accountUserInfoTestId = `account.user_info.${user.id}`;
 
     return (

@@ -84,6 +84,7 @@ const Field = ({
             <FloatingTextInput
                 autoCapitalize={autoCapitalize}
                 autoCorrect={autoCorrect}
+                containerStyle={textInputStyle}
                 disableFullscreenUI={true}
                 editable={!isDisabled}
                 keyboardAppearance={getKeyboardAppearanceFromTheme(theme)}
@@ -97,7 +98,6 @@ const Field = ({
                 value={value}
                 ref={fieldRef}
                 onSubmitEditing={onSubmitEditing}
-                textInputStyle={textInputStyle}
                 {...props}
             />
         </View>

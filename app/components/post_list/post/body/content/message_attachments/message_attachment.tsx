@@ -42,8 +42,8 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
             padding: 12,
         },
         border: {
-            borderLeftColor: changeOpacity(theme.linkColor, 0.6),
-            borderLeftWidth: 3,
+            borderLeftColor: changeOpacity(theme.centerChannelColor, 0.15),
+            borderLeftWidth: 1,
         },
         message: {
             color: theme.centerChannelColor,

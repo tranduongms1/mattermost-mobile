@@ -61,7 +61,7 @@ const close = (componentId: AvailableScreens, isModal: boolean): void => {
 };
 
 const isDirect = (channel?: ChannelModel): boolean => {
-    return channel?.type === General.DM_CHANNEL || channel?.type === General.GM_CHANNEL;
+    return channel?.type === General.DM_CHANNEL;
 };
 
 const makeCloseButton = (icon: ImageResource) => {
