@@ -716,6 +716,7 @@
   "mobile.permission_denied_retry": "Settings",
   "mobile.post_info.add_reaction": "Add Reaction",
   "mobile.post_info.copy_text": "Copy Text",
+  "mobile.post_info.jump": "Jump to message",
   "mobile.post_info.mark_unread": "Mark as Unread",
   "mobile.post_info.pin": "Pin to Channel",
   "mobile.post_info.reply": "Reply",
