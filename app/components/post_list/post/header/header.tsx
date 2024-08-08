@@ -79,9 +79,8 @@ const Header = (props: HeaderProps) => {
     const theme = useTheme();
     const style = getStyleSheet(theme);
     const pendingPostStyle = isPendingOrFailed ? style.pendingPost : undefined;
-    const isReplyPost = Boolean(post.rootId && !isEphemeral);
-    const showReply = !isReplyPost && (location !== THREAD) && (shouldRenderReplyButton && (!rootPostAuthor && commentCount > 0));
-    const displayName = postUserDisplayName(post, author, teammateNameDisplay, enablePostUsernameOverride);
+    const showReply = !isEphemeral && (location !== THREAD) && (shouldRenderReplyButton && (post.type || commentCount > 0));
+    const displayName = author && postUserDisplayName(post, author, teammateNameDisplay, enablePostUsernameOverride);
     const rootAuthorDisplayName = rootPostAuthor ? displayUsername(rootPostAuthor, currentUser?.locale, teammateNameDisplay, true) : undefined;
     const customStatus = getUserCustomStatus(author);
     const showCustomStatusEmoji = Boolean(
@@ -107,7 +106,7 @@ const Header = (props: HeaderProps) => {
                         showCustomStatusEmoji={showCustomStatusEmoji}
                         customStatus={customStatus!}
                     />
-                    {(!isSystemPost || isAutoResponse) &&
+                    {(!isSystemPost || isAutoResponse) && false &&
                     <HeaderTag
                         isAutoResponder={isAutoResponse}
                         isAutomation={isWebHook || author?.isBot}
@@ -128,7 +127,7 @@ const Header = (props: HeaderProps) => {
                             />
                         </View>
                     )}
-                    {!isCRTEnabled && showReply && commentCount > 0 &&
+                    {!isCRTEnabled && showReply &&
                         <HeaderReply
                             commentCount={commentCount}
                             location={location}
@@ -138,7 +137,7 @@ const Header = (props: HeaderProps) => {
                     }
                 </View>
             </View>
-            {Boolean(rootAuthorDisplayName) && location === CHANNEL &&
+            {Boolean(false) && location === CHANNEL &&
             <HeaderCommentedOn
                 locale={currentUser?.locale || DEFAULT_LOCALE}
                 name={rootAuthorDisplayName!}

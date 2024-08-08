@@ -16,6 +16,8 @@ import Acknowledgements from './acknowledgements';
 import AddMembers from './add_members';
 import Content from './content';
 import Failed from './failed';
+import Issue from './issue';
+import IssueUpdated from './issue_updated';
 import Message from './message';
 import Reactions from './reactions';
 
@@ -24,6 +26,7 @@ import type {SearchPattern} from '@typings/global/markdown';
 
 type BodyProps = {
     appsEnabled: boolean;
+    fromMe: boolean;
     hasFiles: boolean;
     hasReactions: boolean;
     highlight: boolean;
@@ -50,7 +53,8 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
             flexDirection: 'row',
             flexWrap: 'wrap',
             alignContent: 'flex-start',
-            marginTop: 12,
+            marginLeft: 8,
+            marginTop: -8,
         },
         messageBody: {
             paddingVertical: 2,
@@ -76,15 +80,12 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
             fontSize: 15,
             lineHeight: 20,
         },
-        messageContainerWithReplyBar: {
-            flexDirection: 'row',
-            width: '100%',
-        },
+        reverse: {flexDirection: 'row-reverse'},
     };
 });
 
 const Body = ({
-    appsEnabled, hasFiles, hasReactions, highlight, highlightReplyBar,
+    appsEnabled, fromMe, hasFiles, hasReactions, highlight, highlightReplyBar,
     isCRTEnabled, isEphemeral, isFirstReply, isJumboEmoji, isLastReply, isPendingOrFailed, isPostAcknowledgementEnabled, isPostAddChannelMember,
     location, post, searchPatterns, showAddReaction, theme,
 }: BodyProps) => {
@@ -118,7 +119,7 @@ const Body = ({
             barStyle.push(style.replyMention);
         }
 
-        return barStyle;
+        return undefined && barStyle;
     }, []);
 
     const onLayout = useCallback((e: LayoutChangeEvent) => {
@@ -133,6 +134,28 @@ const Body = ({
                 style={style.message}
                 id='post_body.deleted'
                 defaultMessage='(message deleted)'
+            />
+        );
+    } else if (post.type === 'custom_issue') {
+        message = (
+            <Issue
+                location={location}
+                post={post}
+                theme={theme}
+            />
+        );
+    } else if (post.type === 'custom_issue_updated') {
+        message = (
+            <IssueUpdated
+                highlight={highlight}
+                isEdited={isEdited}
+                isPendingOrFailed={isPendingOrFailed}
+                isReplyPost={isReplyPost}
+                layoutWidth={layoutWidth}
+                location={location}
+                post={post}
+                searchPatterns={searchPatterns}
+                theme={theme}
             />
         );
     } else if (isPostAddChannelMember) {
@@ -154,6 +177,7 @@ const Body = ({
     } else if (post.message.length) {
         message = (
             <Message
+                fromMe={fromMe}
                 highlight={highlight}
                 isEdited={isEdited}
                 isPendingOrFailed={isPendingOrFailed}
@@ -182,9 +206,10 @@ const Body = ({
                     theme={theme}
                 />
                 }
-                {hasFiles &&
+                {hasFiles && location !== 'IssueList' &&
                 <Files
                     failed={isFailed}
+                    fromMe={fromMe}
                     layoutWidth={layoutWidth}
                     location={location}
                     post={post}
@@ -192,7 +217,7 @@ const Body = ({
                 />
                 }
                 {(acknowledgementsVisible || reactionsVisible) && (
-                    <View style={style.ackAndReactionsContainer}>
+                    <View style={[style.ackAndReactionsContainer, fromMe && style.reverse]}>
                         {acknowledgementsVisible && (
                             <Acknowledgements
                                 hasReactions={hasReactions}
@@ -216,7 +241,7 @@ const Body = ({
 
     return (
         <View
-            style={style.messageContainerWithReplyBar}
+            style={[style.messageContainer, fromMe && style.reverse]}
             onLayout={onLayout}
         >
             <View style={replyBarStyle()}/>

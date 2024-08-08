@@ -307,6 +307,7 @@ const SearchScreen = ({teamId, teams}: Props) => {
         }
         if (clearRef.current) {
             onSnap(headerOffset, false);
+            searchRef.current?.focus();
             clearRef.current = false;
         } else if (cancelRef.current) {
             onSnap(0);

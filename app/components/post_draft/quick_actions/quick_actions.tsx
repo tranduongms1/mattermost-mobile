@@ -7,8 +7,9 @@ import {StyleSheet, View} from 'react-native';
 import CameraAction from './camera_quick_action';
 import FileAction from './file_quick_action';
 import ImageAction from './image_quick_action';
-import InputAction from './input_quick_action';
+import IssueAction from './issue_action';
 import PostPriorityAction from './post_priority_action';
+import TroubleAction from './trouble_action';
 
 type Props = {
     testID?: string;
@@ -38,22 +39,14 @@ const style = StyleSheet.create({
 export default function QuickActions({
     testID,
     canUploadFiles,
-    value,
     fileCount,
     isPostPriorityEnabled,
     canShowPostPriority,
     maxFileCount,
-    updateValue,
     addFiles,
     postPriority,
     updatePostPriority,
-    focus,
 }: Props) {
-    const atDisabled = value[value.length - 1] === '@';
-    const slashDisabled = value.length > 0;
-
-    const atInputActionTestID = `${testID}.at_input_action`;
-    const slashInputActionTestID = `${testID}.slash_input_action`;
     const fileActionTestID = `${testID}.file_action`;
     const imageActionTestID = `${testID}.image_action`;
     const cameraActionTestID = `${testID}.camera_action`;
@@ -72,20 +65,6 @@ export default function QuickActions({
             testID={testID}
             style={style.quickActionsContainer}
         >
-            <InputAction
-                testID={atInputActionTestID}
-                disabled={atDisabled}
-                inputType='at'
-                updateValue={updateValue}
-                focus={focus}
-            />
-            <InputAction
-                testID={slashInputActionTestID}
-                disabled={slashDisabled}
-                inputType='slash'
-                updateValue={updateValue}
-                focus={focus}
-            />
             <FileAction
                 testID={fileActionTestID}
                 {...uploadProps}
@@ -105,6 +84,8 @@ export default function QuickActions({
                     updatePostPriority={updatePostPriority}
                 />
             )}
+            <TroubleAction/>
+            <IssueAction/>
         </View>
     );
 }

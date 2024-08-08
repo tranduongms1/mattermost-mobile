@@ -85,7 +85,11 @@ export async function switchToChannel(serverUrl: string, channelId: string, team
                     await operator.batchRecords(models, 'switchToChannel');
                 }
 
-                if (isTabletDevice) {
+                const t = await getTeamById(database, channel.teamId);
+                if (channel.name === General.DEFAULT_CHANNEL && t?.name === 'emotion') {
+                    dismissAllModalsAndPopToRoot();
+                    DeviceEventEmitter.emit(NavigationConstants.NAVIGATION_HOME);
+                } else if (isTabletDevice) {
                     dismissAllModalsAndPopToRoot();
                     DeviceEventEmitter.emit(NavigationConstants.NAVIGATION_HOME, Screens.CHANNEL);
                 } else {
@@ -173,6 +177,7 @@ export async function markChannelAsViewed(serverUrl: string, channelId: string, 
         member.prepareUpdate((m) => {
             m.isUnread = false;
             m.mentionsCount = 0;
+            m.messageCount = 0;
             m.manuallyUnread = false;
             if (!onlyCounts) {
                 m.viewedAt = member.lastViewedAt;

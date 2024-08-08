@@ -4,7 +4,7 @@
 import {withDatabase, withObservables} from '@nozbe/watermelondb/react';
 
 import {observeChannel} from '@queries/servers/channel';
-import {observeCanDownloadFiles, observeConfigBooleanValue} from '@queries/servers/system';
+import {observeCanDownloadFiles, observeConfigBooleanValue, observeCurrentTeamId} from '@queries/servers/system';
 
 import ChannelFiles from './channel_files';
 
@@ -15,8 +15,10 @@ type Props = WithDatabaseArgs & {
 }
 
 const enhance = withObservables(['channelId'], ({channelId, database}: Props) => {
+    const currentTeamId = observeCurrentTeamId(database);
     const channel = observeChannel(database, channelId);
     return {
+        currentTeamId,
         channel,
         canDownloadFiles: observeCanDownloadFiles(database),
         publicLinkEnabled: observeConfigBooleanValue(database, 'EnablePublicLink'),

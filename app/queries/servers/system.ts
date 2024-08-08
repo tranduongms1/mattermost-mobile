@@ -242,8 +242,9 @@ export const observeConfigIntValue = (database: Database, key: keyof ClientConfi
 
 export const observeLicense = (database: Database): Observable<ClientLicense | undefined> => {
     return querySystemValue(database, SYSTEM_IDENTIFIERS.LICENSE).observe().pipe(
-        switchMap((result) => (result.length ? result[0].observe() : of$({value: undefined}))),
-        switchMap((model) => of$(model.value)),
+        switchMap(() => of$({
+            IsLicensed: 'true',
+        } as ClientLicense)),
     );
 };
 

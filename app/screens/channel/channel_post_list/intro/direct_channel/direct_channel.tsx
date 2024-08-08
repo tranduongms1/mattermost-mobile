@@ -199,9 +199,11 @@ const DirectChannel = ({
 
     return (
         <View style={styles.container}>
+            {channel.type !== General.GM_CHANNEL &&
             <View style={styles.profilesContainer}>
                 {profiles}
             </View>
+            }
             <View style={{flexDirection: 'row'}}>
                 <Text
                     style={[styles.title, channel.type === General.GM_CHANNEL ? styles.titleGroup : undefined]}

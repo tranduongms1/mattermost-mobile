@@ -20,6 +20,7 @@ type FilesProps = {
     canDownloadFiles: boolean;
     failed?: boolean;
     filesInfo: FileInfo[];
+    fromMe?: boolean;
     layoutWidth?: number;
     location: string;
     isReplyPost: boolean;
@@ -49,9 +50,9 @@ const styles = StyleSheet.create({
     },
 });
 
-const Files = ({canDownloadFiles, failed, filesInfo, isReplyPost, layoutWidth, location, postId, postProps, publicLinkEnabled}: FilesProps) => {
+const Files = ({canDownloadFiles, failed, filesInfo, fromMe, isReplyPost, layoutWidth, location, postId, postProps, publicLinkEnabled}: FilesProps) => {
     const galleryIdentifier = `${postId}-fileAttachments-${location}`;
-    const [inViewPort, setInViewPort] = useState(false);
+    const [inViewPort, setInViewPort] = useState(location === 'Issue');
     const isTablet = useIsTablet();
 
     const {images: imageAttachments, nonImages: nonImageAttachments} = useImageAttachments(filesInfo, publicLinkEnabled);
@@ -126,7 +127,7 @@ const Files = ({canDownloadFiles, failed, filesInfo, isReplyPost, layoutWidth, l
         }
 
         return (
-            <View style={[styles.row, {width: portraitPostWidth}]}>
+            <View style={[styles.row, {width: portraitPostWidth}, fromMe && {justifyContent: 'flex-end'}]}>
                 { renderItems(visibleImages, nonVisibleImagesCount, true) }
             </View>
         );

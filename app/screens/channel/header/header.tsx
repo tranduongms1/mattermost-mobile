@@ -24,6 +24,7 @@ import {preventDoubleTap} from '@utils/tap';
 import {changeOpacity, makeStyleSheetFromTheme} from '@utils/theme';
 import {typography} from '@utils/typography';
 
+import Actions from './actions';
 import ChannelHeaderBookmarks from './bookmarks';
 import QuickActions, {MARGIN, SEPARATOR_HEIGHT} from './quick_actions';
 
@@ -248,6 +249,11 @@ const ChannelHeader = ({
             />
             <View style={contextStyle}>
                 <RoundedHeaderContext/>
+                <Actions
+                    channelId={channelId}
+                    channelType={channelType}
+                    displayName={displayName}
+                />
             </View>
             {isBookmarksEnabled && hasBookmarks && shouldRenderBookmarks &&
             <ChannelHeaderBookmarks

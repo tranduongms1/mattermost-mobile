@@ -358,7 +358,7 @@ const PostList = ({
                 style={styles.flex}
                 viewabilityConfig={VIEWABILITY_CONFIG}
                 testID={`${testID}.flat_list`}
-                inverted={true}
+                inverted={location !== Screens.NEWS}
                 refreshing={refreshing}
                 onRefresh={onRefresh}
             />

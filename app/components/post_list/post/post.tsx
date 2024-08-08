@@ -156,6 +156,7 @@ const Post = ({
     const isFailed = isPostFailed(post);
     const isSystemPost = isSystemMessage(post);
     const isCallsPost = isCallsCustomMessage(post);
+    const fromMe = location === Screens.CHANNEL && post.userId === currentUser?.id;
     const hasBeenDeleted = (post.deleteAt !== 0);
     const isWebHook = isFromWebhook(post);
     const hasSameRoot = useMemo(() => {
@@ -186,9 +187,14 @@ const Post = ({
         if (isEphemeral || hasBeenDeleted) {
             removePost(serverUrl, post);
         } else if (isValidSystemMessage && !hasBeenDeleted && !isPendingOrFailed) {
+            if (location === Screens.NEWS) {
+                fetchAndSwitchToThread(serverUrl, post.id);
+            }
             if ([Screens.CHANNEL, Screens.PERMALINK].includes(location)) {
-                const postRootId = post.rootId || post.id;
-                fetchAndSwitchToThread(serverUrl, postRootId);
+                if (post.type || post.rootId) {
+                    const postRootId = post.rootId || post.id;
+                    fetchAndSwitchToThread(serverUrl, postRootId);
+                }
             }
         }
 
@@ -286,6 +292,8 @@ const Post = ({
     if (!showPostPriority && hasSameRoot && isConsecutivePost && sameSequence) {
         consecutiveStyle = styles.consecutive;
         postAvatar = <View style={styles.consecutivePostContainer}/>;
+    } else if (fromMe) {
+        postAvatar = <View style={styles.consecutivePostContainer}/>;
     } else {
         postAvatar = (
             <View style={[styles.profilePictureContainer, pendingPostStyle]}>
@@ -353,6 +361,7 @@ const Post = ({
         body = (
             <Body
                 appsEnabled={appsEnabled}
+                fromMe={fromMe}
                 hasFiles={hasFiles}
                 hasReactions={hasReactions}
                 highlight={Boolean(highlightedStyle)}

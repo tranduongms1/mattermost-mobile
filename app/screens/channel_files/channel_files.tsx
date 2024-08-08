@@ -26,6 +26,7 @@ import type {AvailableScreens} from '@typings/screens/navigation';
 const TEST_ID = 'channel_files';
 
 type Props = {
+    currentTeamId: string;
     channel: ChannelModel;
     componentId: AvailableScreens;
     canDownloadFiles: boolean;
@@ -72,6 +73,7 @@ const getSearchParams = (channelId: string, searchTerm?: string, filterValue?: F
 const emptyFileResults: FileInfo[] = [];
 
 function ChannelFiles({
+    currentTeamId,
     channel,
     componentId,
     canDownloadFiles,
@@ -98,7 +100,7 @@ function ChannelFiles({
         const t = Date.now();
         lastSearchRequest.current = t;
         const searchParams = getSearchParams(channel.id, searchTerm, ftr);
-        const {files} = await searchFiles(serverUrl, channel.teamId, searchParams);
+        const {files} = await searchFiles(serverUrl, channel.teamId || currentTeamId, searchParams);
         if (lastSearchRequest.current !== t) {
             return;
         }

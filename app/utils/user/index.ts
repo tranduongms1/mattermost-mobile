@@ -61,7 +61,7 @@ export function getFullName(user: UserProfile | UserModel): string {
     }
 
     if (firstName && lastName) {
-        return `${firstName} ${lastName}`;
+        return `${lastName} ${firstName}`;
     } else if (firstName) {
         return firstName;
     } else if (lastName) {
@@ -392,4 +392,10 @@ export const getLastPictureUpdate = (user: UserModel | UserProfile) => {
     }
 
     return user.is_bot ? user.bot_last_icon_update : user.last_picture_update || 0;
+};
+
+export const sortContact = (a: UserProfile, b: UserProfile) => {
+    const name1 = displayUsername(a, 'vi', Preferences.DISPLAY_PREFER_NICKNAME);
+    const name2 = displayUsername(b, 'vi', Preferences.DISPLAY_PREFER_NICKNAME);
+    return name1.localeCompare(name2);
 };
