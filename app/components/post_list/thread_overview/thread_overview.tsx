@@ -22,6 +22,7 @@ import {typography} from '@utils/typography';
 import type PostModel from '@typings/database/models/servers/post';
 
 type Props = {
+    isArticle?: boolean;
     isSaved: boolean;
     repliesCount: number;
     rootId: string;
@@ -58,7 +59,7 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
     };
 });
 
-const ThreadOverview = ({isSaved, repliesCount, rootId, rootPost, style, testID}: Props) => {
+const ThreadOverview = ({isArticle, isSaved, repliesCount, rootId, rootPost, style, testID}: Props) => {
     const theme = useTheme();
     const styles = getStyleSheet(theme);
 
@@ -141,6 +142,7 @@ const ThreadOverview = ({isSaved, repliesCount, rootId, rootPost, style, testID}
                 {repliesCountElement}
             </View>
             <View style={styles.optionsContainer}>
+                {!isArticle &&
                 <TouchableOpacity
                     onPress={onHandleSavePress}
                     style={styles.optionContainer}
@@ -152,6 +154,7 @@ const ThreadOverview = ({isSaved, repliesCount, rootId, rootPost, style, testID}
                         color={isSaved ? theme.linkColor : changeOpacity(theme.centerChannelColor, 0.64)}
                     />
                 </TouchableOpacity>
+                }
                 <TouchableOpacity
                     onPress={showPostOptions}
                     style={styles.optionContainer}

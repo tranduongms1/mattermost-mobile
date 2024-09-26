@@ -22,6 +22,7 @@ type ImageFileProps = {
     backgroundColor?: string;
     file: FileInfo;
     forwardRef?: React.RefObject<unknown>;
+    fullWidth?: boolean;
     inViewPort?: boolean;
     isSingleImage?: boolean;
     contentFit?: ImageContentFit;
@@ -66,7 +67,7 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => ({
 }));
 
 const ImageFile = ({
-    backgroundColor, file, forwardRef, inViewPort, isSingleImage,
+    backgroundColor, file, forwardRef, fullWidth, inViewPort, isSingleImage,
     contentFit = 'cover', wrapperWidth,
 }: ImageFileProps) => {
     const dimensions = useWindowDimensions();
@@ -79,6 +80,12 @@ const ImageFile = ({
 
     const getImageDimensions = () => {
         if (isSingleImage) {
+            if (fullWidth && file.width && wrapperWidth) {
+                return {
+                    width: wrapperWidth,
+                    height: wrapperWidth * (file.height / file.width),
+                };
+            }
             const viewPortHeight = Math.max(dimensions.height, dimensions.width) * 0.45;
             return calculateDimensions(file?.height, file?.width, wrapperWidth, viewPortHeight);
         }

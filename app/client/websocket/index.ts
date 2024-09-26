@@ -2,6 +2,7 @@
 // See LICENSE.txt for license information.
 
 import {type ClientHeaders, getOrCreateWebSocketClient, type WebSocketClientInterface, WebSocketReadyState} from '@mattermost/react-native-network-client';
+import Emittery from 'emittery';
 import {Platform} from 'react-native';
 
 import {WebsocketEvents} from '@constants';
@@ -20,7 +21,7 @@ const DEFAULT_OPTIONS = {
 };
 const TLS_HANDSHARE_ERROR = 1015;
 
-export default class WebSocketClient {
+export default class WebSocketClient extends Emittery {
     private conn?: WebSocketClientInterface;
     private connectionTimeout: NodeJS.Timeout | undefined;
     private connectionId = '';
@@ -55,6 +56,7 @@ export default class WebSocketClient {
     private connectingCallback?: () => void;
 
     constructor(serverUrl: string, token: string) {
+        super();
         this.token = token;
         this.serverUrl = serverUrl;
     }
@@ -296,6 +298,7 @@ export default class WebSocketClient {
 
                 this.serverSequence = msg.seq + 1;
                 this.eventCallback(msg);
+                this.emit(msg.event, msg.data);
             }
         });
 

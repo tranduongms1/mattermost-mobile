@@ -25,7 +25,7 @@ type NotifyProps = {
     NotifyProps,
 ]
 
-export function extractChannelDisplayName(raw: Pick<Channel, 'type' | 'display_name' | 'fake'>, record?: ChannelModel) {
+export function extractChannelDisplayName(raw: Pick<Channel, 'type' | 'display_name' | 'fake'> & any, record?: ChannelModel) {
     let displayName = '';
     switch (raw.type) {
         case General.DM_CHANNEL:
@@ -36,6 +36,9 @@ export function extractChannelDisplayName(raw: Pick<Channel, 'type' | 'display_n
                 displayName = raw.display_name;
             } else {
                 displayName = record?.displayName || raw.display_name;
+            }
+            if (raw.purpose) {
+                displayName = raw.purpose;
             }
             break;
         }

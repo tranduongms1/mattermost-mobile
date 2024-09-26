@@ -24,6 +24,7 @@ import type {DocumentRef} from '@components/document';
 type FileProps = {
     canDownloadFiles: boolean;
     file: FileInfo;
+    fullWidth?: boolean;
     galleryIdentifier: string;
     index: number;
     inViewPort: boolean;
@@ -70,6 +71,7 @@ const File = ({
     canDownloadFiles,
     channelName,
     file,
+    fullWidth,
     galleryIdentifier,
     inViewPort = false,
     index,
@@ -140,6 +142,7 @@ const File = ({
                     <VideoFile
                         file={file}
                         forwardRef={ref}
+                        fullWidth={fullWidth}
                         inViewPort={inViewPort}
                         isSingleImage={isSingleImage}
                         contentFit={'cover'}
@@ -167,6 +170,7 @@ const File = ({
                     <ImageFile
                         file={file}
                         forwardRef={ref}
+                        fullWidth={fullWidth}
                         inViewPort={inViewPort}
                         isSingleImage={isSingleImage}
                         contentFit={'cover'}

@@ -99,7 +99,7 @@ const Intro = ({channel, roles}: Props) => {
 
     return (
         <View style={styles.container}>
-            {element}
+            {channel?.type === General.DM_CHANNEL && element}
         </View>
     );
 };

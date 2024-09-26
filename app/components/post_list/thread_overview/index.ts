@@ -5,6 +5,8 @@ import {withDatabase, withObservables} from '@nozbe/watermelondb/react';
 import {of as of$} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 
+import {General} from '@constants';
+import {observeChannel} from '@queries/servers/channel';
 import {observePost, queryPostReplies} from '@queries/servers/post';
 import {querySavedPostsPreferences} from '@queries/servers/preference';
 
@@ -17,6 +19,10 @@ const enhanced = withObservables(
     ({database, rootId}: WithDatabaseArgs & {rootId: string}) => {
         return {
             rootPost: observePost(database, rootId),
+            isArticle: observePost(database, rootId).pipe(
+                switchMap((p) => (p ? observeChannel(database, p.channelId) : of$(undefined))),
+                switchMap((c) => of$(c?.name === General.DEFAULT_CHANNEL)),
+            ),
             isSaved: querySavedPostsPreferences(database, rootId).
                 observeWithColumns(['value']).
                 pipe(

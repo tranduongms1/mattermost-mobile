@@ -20,12 +20,14 @@ type FilesProps = {
     canDownloadFiles: boolean;
     failed?: boolean;
     filesInfo: FileInfo[];
+    fullWidth?: boolean;
     layoutWidth?: number;
     location: string;
     isReplyPost: boolean;
     postId: string;
     postProps: Record<string, any>;
     publicLinkEnabled: boolean;
+    reverse?: boolean;
 }
 
 const MAX_VISIBLE_ROW_IMAGES = 4;
@@ -45,13 +47,13 @@ const styles = StyleSheet.create({
         opacity: 0.5,
     },
     marginTop: {
-        marginTop: 10,
+        marginTop: 5,
     },
 });
 
-const Files = ({canDownloadFiles, failed, filesInfo, isReplyPost, layoutWidth, location, postId, postProps, publicLinkEnabled}: FilesProps) => {
+const Files = ({canDownloadFiles, failed, filesInfo, fullWidth, isReplyPost, layoutWidth, location, postId, postProps, publicLinkEnabled, reverse}: FilesProps) => {
     const galleryIdentifier = `${postId}-fileAttachments-${location}`;
-    const [inViewPort, setInViewPort] = useState(false);
+    const [inViewPort, setInViewPort] = useState(location === 'Issue');
     const isTablet = useIsTablet();
 
     const {images: imageAttachments, nonImages: nonImageAttachments} = useImageAttachments(filesInfo, publicLinkEnabled);
@@ -98,6 +100,7 @@ const Files = ({canDownloadFiles, failed, filesInfo, isReplyPost, layoutWidth, l
                         key={file.id}
                         canDownloadFiles={canDownloadFiles}
                         file={file}
+                        fullWidth={fullWidth}
                         index={attachmentIndex(file.id!)}
                         onPress={handlePreviewPress}
                         isSingleImage={isSingleImage}
@@ -126,7 +129,7 @@ const Files = ({canDownloadFiles, failed, filesInfo, isReplyPost, layoutWidth, l
         }
 
         return (
-            <View style={[styles.row, {width: portraitPostWidth}]}>
+            <View style={[styles.row, {width: portraitPostWidth}, reverse && {justifyContent: 'flex-end'}]}>
                 { renderItems(visibleImages, nonVisibleImagesCount, true) }
             </View>
         );

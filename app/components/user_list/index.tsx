@@ -3,13 +3,15 @@
 
 import React, {useCallback, useMemo} from 'react';
 import {defineMessages, type IntlShape, useIntl} from 'react-intl';
-import {FlatList, Keyboard, type ListRenderItemInfo, Platform, SectionList, type SectionListData, Text, View} from 'react-native';
+import {FlatList, Keyboard, type ListRenderItemInfo, Platform, SectionList, type SectionListData, Text, View, Linking, TouchableOpacity} from 'react-native';
 
 import {storeProfile} from '@actions/local/user';
+import CompassIcon from '@components/compass_icon';
 import Loading from '@components/loading';
 import NoResultsWithTerm from '@components/no_results_with_term';
+import UserItem from '@components/user_item';
 import UserListRow from '@components/user_list_row';
-import {General, Screens} from '@constants';
+import {General, Preferences, Screens} from '@constants';
 import {useServerUrl} from '@context/server';
 import {useTheme} from '@context/theme';
 import {useKeyboardHeight} from '@hooks/device';
@@ -19,6 +21,7 @@ import {
     makeStyleSheetFromTheme,
 } from '@utils/theme';
 import {typography} from '@utils/typography';
+import {displayUsername} from '@utils/user';
 
 import type UserModel from '@typings/database/models/servers/user';
 
@@ -54,7 +57,7 @@ const keyExtractor = (item: UserProfile) => {
 
 const sectionKeyExtractor = (profile: UserProfile) => {
     // Group items alphabetically by first letter of username
-    return profile.username[0].toUpperCase();
+    return displayUsername(profile, 'vi', Preferences.DISPLAY_PREFER_NICKNAME)[0].toUpperCase();
 };
 
 const sectionRoleKeyExtractor = (cAdmin: boolean) => {
@@ -152,6 +155,10 @@ const getStyleFromTheme = makeStyleSheetFromTheme((theme) => {
             alignItems: 'center' as const,
             justifyContent: 'center' as const,
         },
+        contact: {
+            height: 48,
+            marginVertical: 16,
+        },
         sectionContainer: {
             backgroundColor: changeOpacity(theme.centerChannelColor, 0.08),
             paddingLeft: 16,
@@ -165,6 +172,9 @@ const getStyleFromTheme = makeStyleSheetFromTheme((theme) => {
             color: theme.centerChannelColor,
             ...typography('Body', 75, 'SemiBold'),
         },
+        callIcon: {
+            color: theme.buttonBg,
+        },
     };
 });
 
@@ -174,25 +184,27 @@ type Props = {
     currentUserId: string;
     handleSelectProfile: (user: UserProfile | UserModel) => void;
     fetchMore?: () => void;
-    loading: boolean;
+    loading?: boolean;
+    contactMode?: boolean;
     manageMode?: boolean;
     showManageMode?: boolean;
-    showNoResults: boolean;
-    selectedIds: {[id: string]: UserProfile};
+    showNoResults?: boolean;
+    selectedIds?: {[id: string]: UserProfile};
     testID?: string;
     term?: string;
-    tutorialWatched: boolean;
+    tutorialWatched?: boolean;
     includeUserMargin?: boolean;
 }
 
 export default function UserList({
     profiles,
     channelMembers,
-    selectedIds,
+    selectedIds = {},
     currentUserId,
     handleSelectProfile,
     fetchMore,
     loading,
+    contactMode = false,
     manageMode = false,
     showManageMode = false,
     showNoResults,
@@ -254,6 +266,38 @@ export default function UserList({
         const canAdd = Object.keys(selectedIds).length < General.MAX_USERS_IN_GM;
 
         const isChAdmin = item.scheme_admin || false;
+
+        if (contactMode) {
+            const callButton = (
+                <TouchableOpacity
+                    onPress={async () => {
+                        const url = 'tel:' + item.username;
+                        const canOpen = await Linking.canOpenURL(url);
+                        if (canOpen) {
+                            await Linking.openURL(url);
+                        }
+                    }}
+                >
+                    <CompassIcon
+                        name='phone'
+                        size={24}
+                        style={style.callIcon}
+                    />
+                </TouchableOpacity>
+            );
+            return (
+                <UserItem
+                    key={item.id}
+                    containerStyle={style.contact}
+                    onUserLongPress={openUserProfile}
+                    onUserPress={handleSelectProfile}
+                    padding={20}
+                    rightDecorator={callButton}
+                    size={48}
+                    user={item}
+                />
+            );
+        }
 
         return (
             <UserListRow

@@ -7,12 +7,13 @@ import Animated, {Easing, useAnimatedStyle, useSharedValue, withTiming} from 're
 
 import {fetchDirectChannelsInfo} from '@actions/remote/channel';
 import ChannelItem from '@components/channel_item';
-import {ROW_HEIGHT as CHANNEL_ROW_HEIGHT} from '@components/channel_item/channel_item';
 import {useServerUrl} from '@context/server';
 import {isDMorGM} from '@utils/channel';
 
 import type CategoryModel from '@typings/database/models/servers/category';
 import type ChannelModel from '@typings/database/models/servers/channel';
+
+const CHANNEL_ROW_HEIGHT = 64;
 
 type Props = {
     sortedChannels: ChannelModel[];
@@ -29,7 +30,7 @@ const CategoryBody = ({sortedChannels, unreadIds, unreadsOnTop, category, onChan
     const ids = useMemo(() => {
         const filteredChannels = unreadsOnTop ? sortedChannels.filter((c) => !unreadIds.has(c.id)) : sortedChannels;
 
-        return filteredChannels;
+        return filteredChannels.filter((c) => c.name !== 'town-square');
     }, [category.type, sortedChannels, unreadIds, unreadsOnTop]);
 
     const unreadChannels = useMemo(() => {

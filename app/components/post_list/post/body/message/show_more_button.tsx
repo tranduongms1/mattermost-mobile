@@ -26,11 +26,11 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
             justifyContent: 'center',
             backgroundColor: theme.centerChannelBg,
             borderColor: changeOpacity(theme.centerChannelColor, 0.2),
-            borderRadius: 22,
+            borderRadius: 16,
             borderWidth: 1,
-            height: 44,
-            width: 44,
-            paddingTop: 7,
+            height: 32,
+            width: 32,
+            paddingTop: 3,
         },
         container: {
             alignItems: 'center',
@@ -38,8 +38,8 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
             flex: 1,
             flexDirection: 'row',
             position: 'relative',
-            top: 10,
-            marginBottom: 10,
+            top: 6,
+            marginBottom: 6,
         },
         dividerLeft: {
             backgroundColor: changeOpacity(theme.centerChannelColor, 0.2),
@@ -55,9 +55,9 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
         },
         gradient: {
             flex: 1,
-            height: 50,
+            height: 40,
             position: 'absolute',
-            top: -50,
+            top: -40,
             width: '100%',
         },
         sign: {
@@ -109,7 +109,7 @@ const ShowMoreButton = ({highlight, onPress, showMore = true, theme}: ShowMoreBu
                     >
                         <CompassIcon
                             name={iconName}
-                            size={28}
+                            size={24}
                             style={style.sign}
                         />
                     </View>
