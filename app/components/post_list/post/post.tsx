@@ -26,6 +26,7 @@ import {changeOpacity, makeStyleSheetFromTheme} from '@utils/theme';
 
 import Avatar from './avatar';
 import Body from './body';
+import CommentedOn from './commented_on';
 import Footer from './footer';
 import Header from './header';
 import PreHeader from './pre_header';
@@ -48,6 +49,7 @@ type PostProps = {
     highlight?: boolean;
     highlightPinnedOrSaved?: boolean;
     highlightReplyBar: boolean;
+    isArticle?: boolean;
     isConsecutivePost?: boolean;
     isCRTEnabled?: boolean;
     isEphemeral: boolean;
@@ -107,6 +109,11 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
             flexDirection: 'column',
         },
         rightColumnPadding: {paddingBottom: 3},
+        separator: {
+            borderBottomColor: changeOpacity(theme.centerChannelColor, 0.1),
+            borderBottomWidth: 1,
+            paddingBottom: 4,
+        },
     };
 });
 
@@ -121,6 +128,7 @@ const Post = ({
     highlight,
     highlightPinnedOrSaved = true,
     highlightReplyBar,
+    isArticle,
     isCRTEnabled,
     isConsecutivePost,
     isEphemeral,
@@ -156,8 +164,10 @@ const Post = ({
     const isFailed = isPostFailed(post);
     const isSystemPost = isSystemMessage(post);
     const isCallsPost = isCallsCustomMessage(post);
+    const fromMe = location === Screens.CHANNEL && post.userId === currentUser?.id;
     const hasBeenDeleted = (post.deleteAt !== 0);
     const isWebHook = isFromWebhook(post);
+    const showCommentedOn = differentThreadSequence && post.rootId && !post.type && location !== Screens.THREAD;
     const hasSameRoot = useMemo(() => {
         if (isFirstReply) {
             return false;
@@ -186,7 +196,7 @@ const Post = ({
         if (isEphemeral || hasBeenDeleted) {
             removePost(serverUrl, post);
         } else if (isValidSystemMessage && !hasBeenDeleted && !isPendingOrFailed) {
-            if ([Screens.CHANNEL, Screens.PERMALINK].includes(location)) {
+            if ([Screens.CHANNEL, Screens.NEWS, Screens.PERMALINK].includes(location)) {
                 const postRootId = post.rootId || post.id;
                 fetchAndSwitchToThread(serverUrl, postRootId);
             }
@@ -283,8 +293,10 @@ const Post = ({
     const showPostPriority = Boolean(isPostPriorityEnabled && post.metadata?.priority?.priority) && (location !== Screens.THREAD || !post.rootId);
 
     const sameSequence = hasReplies ? (hasReplies && post.rootId) : !post.rootId;
-    if (!showPostPriority && hasSameRoot && isConsecutivePost && sameSequence) {
+    if (!isArticle && !showPostPriority && hasSameRoot && isConsecutivePost && sameSequence) {
         consecutiveStyle = styles.consecutive;
+        postAvatar = <View style={styles.consecutivePostContainer}/>;
+    } else if (fromMe) {
         postAvatar = <View style={styles.consecutivePostContainer}/>;
     } else {
         postAvatar = (
@@ -313,6 +325,7 @@ const Post = ({
                 <Header
                     currentUser={currentUser}
                     differentThreadSequence={differentThreadSequence}
+                    isArticle={isArticle}
                     isAutoResponse={isAutoResponder}
                     isCRTEnabled={isCRTEnabled}
                     isEphemeral={isEphemeral}
@@ -353,10 +366,12 @@ const Post = ({
         body = (
             <Body
                 appsEnabled={appsEnabled}
+                fromMe={fromMe}
                 hasFiles={hasFiles}
                 hasReactions={hasReactions}
                 highlight={Boolean(highlightedStyle)}
                 highlightReplyBar={highlightReplyBar}
+                isArticle={isArticle}
                 isCRTEnabled={isCRTEnabled}
                 isEphemeral={isEphemeral}
                 isFirstReply={isFirstReply}
@@ -377,7 +392,7 @@ const Post = ({
     let unreadDot;
     let footer;
     if (isCRTEnabled && thread && location !== Screens.THREAD && !(rootId && location === Screens.PERMALINK)) {
-        if (thread.replyCount > 0 || thread.isFollowing) {
+        if (isArticle || thread.replyCount > 0 || thread.isFollowing) {
             footer = (
                 <Footer
                     channelId={post.channelId}
@@ -391,6 +406,35 @@ const Post = ({
                 <UnreadDot/>
             );
         }
+    }
+
+    if (isArticle) {
+        return (
+            <View
+                testID={testID}
+                style={[styles.postStyle, style, highlightedStyle]}
+            >
+                <TouchableHighlight
+                    testID={itemTestID}
+                    onPress={handlePress}
+                    onLongPress={showPostOptions}
+                    delayLongPress={200}
+                    underlayColor={changeOpacity(theme.centerChannelColor, 0.1)}
+                    style={[styles.postContent, styles.separator]}
+                >
+                    <>
+                        <View style={styles.container}>
+                            {postAvatar}
+                            <View style={styles.rightColumn}>
+                                {header}
+                            </View>
+                        </View>
+                        {body}
+                        {footer}
+                    </>
+                </TouchableHighlight>
+            </View>
+        );
     }
 
     return (
@@ -418,6 +462,13 @@ const Post = ({
                         {postAvatar}
                         <View style={rightColumnStyle}>
                             {header}
+                            {showCommentedOn &&
+                            <CommentedOn
+                                currentUser={currentUser}
+                                post={post}
+                                theme={theme}
+                            />
+                            }
                             {body}
                             {footer}
                         </View>

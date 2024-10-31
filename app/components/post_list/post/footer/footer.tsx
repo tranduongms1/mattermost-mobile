@@ -91,7 +91,7 @@ const Footer = ({channelId, location, participants, teamId, thread}: Props) => {
 
     let repliesComponent;
     let followButton;
-    if (thread.replyCount) {
+    if (thread) {
         repliesComponent = (
             <>
                 <View style={styles.replyIconContainer}>

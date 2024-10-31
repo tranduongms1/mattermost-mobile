@@ -150,7 +150,7 @@ const Modifiers = ({scrollEnabled, searchValue, setSearchValue, searchRef, setTe
                     defaultMessage='Search options'
                     testID='search.modifier.header'
                 />
-                {teams.length > 1 &&
+                {false && teams.length > 1 &&
                 <TeamPickerIcon
                     size={TEAM_PICKER_ICON_SIZE}
                     setTeamId={setTeamId}

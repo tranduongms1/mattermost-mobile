@@ -136,7 +136,7 @@ const ChannelInfo = ({
                     canManageSettings={canManageSettings}
                 />
                 <View style={styles.separator}/>
-                {convertGMOptionAvailable &&
+                {false && convertGMOptionAvailable &&
                 <>
                     <ConvertToChannelLabel channelId={channelId}/>
                     <View style={styles.separator}/>

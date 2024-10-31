@@ -10,6 +10,7 @@ import Animated, {FadeInDown, FadeOutUp} from 'react-native-reanimated';
 import {switchToGlobalThreads} from '@actions/local/thread';
 import {joinChannelIfNeeded, makeDirectChannel, searchAllChannels, switchToChannelById} from '@actions/remote/channel';
 import {searchProfiles} from '@actions/remote/user';
+import {General} from '@app/constants';
 import ChannelItem from '@components/channel_item';
 import Loading from '@components/loading';
 import NoResultsWithTerm from '@components/no_results_with_term';
@@ -108,6 +109,9 @@ const FilteredList = ({
                 if (channels) {
                     const existingChannelIds = new Set(channelsMatchStart.concat(channelsMatch).concat(archivedChannels).map((c) => c.id));
                     const [startWith, matches, archived] = channels.reduce<[Channel[], Channel[], Channel[]]>(([s, m, a], c) => {
+                        if (c.name === General.DEFAULT_CHANNEL) {
+                            return [s, m, a];
+                        }
                         if (existingChannelIds.has(c.id) || !teamIds.has(c.team_id)) {
                             return [s, m, a];
                         }

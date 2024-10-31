@@ -98,6 +98,12 @@ const CategoryHandler = <TBase extends Constructor<ServerDataOperatorBase>>(supe
             return [];
         }
 
+        for (const c of categoryChannels) {
+            if (c.category_id.startsWith('channels')) {
+                c.category_id = c.category_id.replace('channels', 'direct_messages');
+            }
+        }
+
         const createOrUpdateRawValues = getUniqueRawsBy({raws: categoryChannels, key: 'id'});
 
         return this.handleRecords({

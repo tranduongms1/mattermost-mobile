@@ -84,6 +84,7 @@ const enhanced = withObservables([], ({combinedPost, post, showAddReaction, sour
     const serverVersion = observeConfigValue(database, 'Version');
     const postEditTimeLimit = observeConfigIntValue(database, 'PostEditTimeLimit', -1);
     const bindings = AppsManager.observeBindings(serverUrl, AppBindingLocations.POST_MENU_ITEM);
+    const isNews = channel.pipe(switchMap((ch: ChannelModel) => of$(ch.name === General.DEFAULT_CHANNEL)));
 
     const canPostPermission = combineLatest([channel, currentUser]).pipe(switchMap(([c, u]) => observePermissionForChannel(database, c, u, Permissions.CREATE_POST, false)));
     const hasAddReactionPermission = currentUser.pipe(switchMap((u) => observePermissionForPost(database, post, u, Permissions.ADD_REACTION, true)));
@@ -115,8 +116,8 @@ const enhanced = withObservables([], ({combinedPost, post, showAddReaction, sour
         return of$(!isArchived && !isReadOnly && sourceScreen !== Screens.THREAD && !isSystemMessage(post) && canPost);
     }));
 
-    const canPin = combineLatest([channelIsArchived, channelIsReadOnly]).pipe(switchMap(([isArchived, isReadOnly]) => {
-        return of$(!isSystemMessage(post) && !isArchived && !isReadOnly);
+    const canPin = combineLatest([channelIsArchived, channelIsReadOnly, isNews]).pipe(switchMap(([isArchived, isReadOnly, news]) => {
+        return of$(!isSystemMessage(post) && !isArchived && !isReadOnly && !news);
     }));
 
     const isSaved = observePostSaved(database, post.id);
@@ -133,9 +134,9 @@ const enhanced = withObservables([], ({combinedPost, post, showAddReaction, sour
         }),
     );
 
-    const canMarkAsUnread = combineLatest([currentUser, channelIsArchived]).pipe(
-        switchMap(([user, isArchived]) => of$(
-            !isArchived && (
+    const canMarkAsUnread = combineLatest([currentUser, channelIsArchived, isNews]).pipe(
+        switchMap(([user, isArchived, news]) => of$(
+            !isArchived && !news && (
                 (user?.id !== post.userId && !isSystemMessage(post)) || isFromWebhook(post)
             ),
         )),

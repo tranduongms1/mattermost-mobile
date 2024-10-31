@@ -24,6 +24,7 @@ type Props = {
     index: number;
     file: FileInfo;
     forwardRef?: React.RefObject<unknown>;
+    fullWidth?: boolean;
     inViewPort?: boolean;
     isSingleImage?: boolean;
     contentFit?: ImageContentFit;
@@ -61,7 +62,7 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => ({
 }));
 
 const VideoFile = ({
-    index, file, forwardRef, inViewPort, isSingleImage,
+    index, file, forwardRef, fullWidth, inViewPort, isSingleImage,
     contentFit = 'cover', wrapperWidth, updateFileForGallery,
 }: Props) => {
     const serverUrl = useServerUrl();
@@ -74,11 +75,17 @@ const VideoFile = ({
 
     const imageDimensions = useMemo(() => {
         if (isSingleImage) {
+            if (fullWidth && video.width && wrapperWidth) {
+                return {
+                    width: wrapperWidth,
+                    height: wrapperWidth * (video.width ? video.height / video.width : 3 / 4),
+                };
+            }
             const viewPortHeight = Math.max(dimensions.height, dimensions.width) * 0.45;
             return calculateDimensions(video.height || wrapperWidth, video.width || wrapperWidth, wrapperWidth, viewPortHeight);
         }
         return undefined;
-    }, [dimensions.height, dimensions.width, video.height, video.width, wrapperWidth, isSingleImage]);
+    }, [dimensions.height, dimensions.width, video.height, video.width, wrapperWidth, isSingleImage, fullWidth]);
 
     const getThumbnail = async () => {
         const data = {...file};
