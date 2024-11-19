@@ -43,6 +43,7 @@ type Props = {
     startDate?: Date;
     endDate?: Date;
     maximumDate?: Date;
+    minimumDate?: Date;
     onStartDateChange: (date?: Date) => void;
     onEndDateChange: (date?: Date) => void;
 }
@@ -52,6 +53,7 @@ function DateRangePicker({
     startDate,
     endDate,
     maximumDate,
+    minimumDate,
     onStartDateChange,
     onEndDateChange,
 }: Props) {
@@ -79,7 +81,8 @@ function DateRangePicker({
                     mode='date'
                     locale='vn'
                     textColor={theme.centerChannelColor}
-                    minimumDate={new Date()}
+                    maximumDate={maximumDate}
+                    minimumDate={minimumDate}
                     value={startDate || new Date()}
                     onChange={(_, selected) => {
                         onStartDateChange(selected);
