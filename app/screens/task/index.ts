@@ -7,6 +7,7 @@ import {switchMap} from 'rxjs/operators';
 
 import {observeChannel} from '@queries/servers/channel';
 import {observePost} from '@queries/servers/post';
+import {observeCurrentUserId} from '@queries/servers/system';
 
 import Task from './task';
 
@@ -15,12 +16,13 @@ import type {WithDatabaseArgs} from '@typings/database/database';
 const enhance = withObservables(['id'], ({database, id}: WithDatabaseArgs & {id: string}) => {
     const post = observePost(database, id);
     const channelDisplayName = post.pipe(
-        switchMap((p) => (p ? observeChannel(database, p.channelId) : of$(undefined))),
+        switchMap((p) => (p ? observeChannel(database, p.channelId) : of$(null))),
         switchMap((c) => of$(c?.displayName)),
     );
-
+    const currentUserId = observeCurrentUserId(database);
     return {
         channelDisplayName,
+        currentUserId,
         post,
     };
 });

@@ -327,6 +327,10 @@ function CreateTask({
                 return;
             }
         }
+        for (const c of cleanChecklists) {
+            c.startDate = c.startDate && c.startDate.getTime();
+            c.endDate = c.endDate && c.endDate.getTime();
+        }
 
         setSubmitting(true);
         setSubmitError('');
@@ -416,6 +420,7 @@ function CreateTask({
                         style={[styles.row, styles.lastRow]}
                         startDate={startDate}
                         endDate={endDate}
+                        minimumDate={new Date()}
                         onStartDateChange={setStartDate}
                         onEndDateChange={setEndDate}
                     />
@@ -446,12 +451,13 @@ function CreateTask({
                                 }}
                             />
                         </View>
-                        {checklists.length > 1 &&
+                        {Boolean(checklists.length > 1 && startDate && endDate) &&
                         <DateRangePicker
                             style={[styles.row, styles.lastRow]}
                             startDate={checklist.startDate || startDate}
                             endDate={checklist.endDate || endDate}
-                            maximumDate={checklist.endDate}
+                            maximumDate={endDate}
+                            minimumDate={startDate}
                             onStartDateChange={(v) => {
                                 const s = checklists.slice();
                                 s.splice(checklistIdx, 1, {...checklist, startDate: v});
