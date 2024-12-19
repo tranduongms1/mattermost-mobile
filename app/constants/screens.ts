@@ -21,6 +21,7 @@ export const CONVERT_GM_TO_CHANNEL = 'ConvertGMToChannel';
 export const CREATE_DIRECT_MESSAGE = 'CreateDirectMessage';
 export const CREATE_ISSUE = 'CreateIssue';
 export const CREATE_OR_EDIT_CHANNEL = 'CreateOrEditChannel';
+export const CREATE_PLAN = 'CreatePlan';
 export const CREATE_POST = 'CreatePost';
 export const CREATE_TASK = 'CreateTask';
 export const CREATE_TEAM = 'CreateTeam';
@@ -51,6 +52,8 @@ export const NEWS = 'News';
 export const ONBOARDING = 'Onboarding';
 export const PERMALINK = 'Permalink';
 export const PINNED_MESSAGES = 'PinnedMessages';
+export const PLAN = 'Plan';
+export const PLANS = 'Plans';
 export const POST_OPTIONS = 'PostOptions';
 export const POST_PRIORITY_PICKER = 'PostPriorityPicker';
 export const REACTIONS = 'Reactions';
@@ -111,6 +114,7 @@ export default {
     CREATE_DIRECT_MESSAGE,
     CREATE_ISSUE,
     CREATE_OR_EDIT_CHANNEL,
+    CREATE_PLAN,
     CREATE_POST,
     CREATE_TASK,
     CREATE_TEAM,
@@ -141,6 +145,8 @@ export default {
     ONBOARDING,
     PERMALINK,
     PINNED_MESSAGES,
+    PLAN,
+    PLANS,
     POST_OPTIONS,
     POST_PRIORITY_PICKER,
     REACTIONS,

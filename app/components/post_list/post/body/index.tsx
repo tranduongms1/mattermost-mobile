@@ -19,6 +19,7 @@ import Failed from './failed';
 import Issue from './issue';
 import IssueUpdated from './issue_updated';
 import Message from './message';
+import Plan from './plan';
 import Reactions from './reactions';
 import Task from './task';
 
@@ -141,7 +142,7 @@ const Body = ({
             barStyle.push(style.replyMention);
         }
 
-        return undefined && barStyle;
+        return undefined;
     }, []);
 
     const onLayout = useCallback((e: LayoutChangeEvent) => {
@@ -177,6 +178,14 @@ const Body = ({
                 location={location}
                 post={post}
                 searchPatterns={searchPatterns}
+                theme={theme}
+            />
+        );
+    } else if (post.type === 'custom_plan') {
+        message = (
+            <Plan
+                location={location}
+                post={post}
                 theme={theme}
             />
         );

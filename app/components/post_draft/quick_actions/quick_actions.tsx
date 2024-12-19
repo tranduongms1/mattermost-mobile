@@ -8,6 +8,7 @@ import CameraAction from './camera_quick_action';
 import FileAction from './file_quick_action';
 import ImageAction from './image_quick_action';
 import IssueAction from './issue_action';
+import PlanAction from './plan_action';
 import PostPriorityAction from './post_priority_action';
 import TaskAction from './task_action';
 import TroubleAction from './trouble_action';
@@ -88,6 +89,7 @@ export default function QuickActions({
             <TroubleAction/>
             <IssueAction/>
             <TaskAction/>
+            <PlanAction/>
         </View>
     );
 }
