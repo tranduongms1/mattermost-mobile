@@ -1,11 +1,12 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useRef} from 'react';
 import {Alert, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
-import {patchChecklist, patchChecklistItem, patchTask} from '@actions/remote/task';
+import {patchIssue} from '@actions/remote/issue';
+import {patchChecklistItem, patchTask} from '@actions/remote/task';
 import {fetchAndSwitchToThread} from '@actions/remote/thread';
 import ProgressBar from '@app/components/progress_bar';
 import {Screens} from '@app/constants';
@@ -30,6 +31,8 @@ type Props = {
     channelDisplayName: string;
     currentUserId: string;
     post: PostModel;
+    troubles: PostModel[];
+    issues: PostModel[];
 }
 
 const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
@@ -118,18 +121,18 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
     };
 });
 
-const Task = ({
+const Plan = ({
     componentId,
     channelDisplayName,
     currentUserId,
     post,
+    troubles,
+    issues,
 }: Props) => {
     const theme = useTheme();
     const presssed = useRef(false);
     const serverUrl = useServerUrl();
     const styles = getStyleSheet(theme);
-    const placeholder = changeOpacity(theme.centerChannelColor, 0.56);
-    const [checklistExpand, setChecklistExpand] = useState<any>({});
 
     const handleBack = useCallback(() => {
         popTopScreen(componentId);
@@ -139,9 +142,7 @@ const Task = ({
 
     const {
         title,
-        assignee_ids,
-        manager_ids,
-        endDate,
+        end_date,
         checklists = [],
         status,
         creator_id,
@@ -158,18 +159,20 @@ const Task = ({
         priority_by,
     } = post.props;
     const isCreator = creator_id === currentUserId;
+    const doneFilter = (i: any) => ['closed', 'skipped'].includes(i.state) || ['done', 'completed'].includes(i.props?.status);
+    const items: any[] = troubles.concat(issues).concat(checklists || []);
+    const progress = items.length ? items.filter(doneFilter).length / items.length : 1;
+    const overdue = end_date && (new Date().getTime() > end_date);
+    const progressColor = overdue ? theme.errorTextColor : '#FAC300';
 
     const openThread = useCallback(preventDoubleTap(() => {
         fetchAndSwitchToThread(serverUrl, post.id);
     }), [serverUrl]);
 
     const updateTask = useCallback(preventDoubleTap((data) => {
-        if (data.status === 'done') {
-            const isNotDone = (c: any) => c.items && c.items.some((i: any) => i.state !== 'closed');
-            if (checklists.some(isNotDone)) {
-                Alert.alert('Không thể báo xong do chưa hoàn thành hết việc');
-                return;
-            }
+        if (data.status === 'done' && progress !== 1) {
+            Alert.alert('Không thể báo xong do chưa hoàn thành hết việc');
+            return;
         }
         if (!presssed.current) {
             presssed.current = true;
@@ -178,17 +181,30 @@ const Task = ({
                     presssed.current = false;
                 });
         }
-    }), [serverUrl, post.id, checklists]);
+    }), [serverUrl, post.id, progress]);
 
-    const updateChecklist = useCallback(preventDoubleTap((index, data) => {
+    const updateIssueStatus = useCallback(preventDoubleTap((item, newStatus) => {
         if (!presssed.current) {
-            presssed.current = true;
-            patchChecklist(serverUrl, post.id, index, data).
-                finally(() => {
-                    presssed.current = false;
-                });
+            Alert.alert(
+                `Báo xong ${item.props.issue_type === 'customer' ? 'trouble' : 'sự cố'}`,
+                item.props.title || item.message,
+                [{
+                    text: 'Hủy',
+                    style: 'cancel',
+                }, {
+                    text: 'Đồng ý',
+                    style: 'destructive',
+                    onPress: () => {
+                        presssed.current = true;
+                        patchIssue(serverUrl, item.id, {status: newStatus}).
+                            finally(() => {
+                                presssed.current = false;
+                            });
+                    },
+                }], {cancelable: true},
+            );
         }
-    }), [serverUrl, post.id]);
+    }), [serverUrl]);
 
     const updateChecklistItem = useCallback(preventDoubleTap((checklistIdx, itemIdx, data) => {
         if (!presssed.current) {
@@ -200,12 +216,6 @@ const Task = ({
         }
     }), [serverUrl, post.id]);
 
-    const color1 = assignee_ids?.length || {color: placeholder};
-    const color2 = manager_ids?.length || {color: placeholder};
-    const taskItems = checklists.reduce((p: any[], c: any) => (c.items ? p.concat(c.items) : p), []);
-    const taskProgress = taskItems.length && (taskItems.filter((i: any) => ['closed', 'skipped'].includes(i.state)).length / taskItems.length);
-    const taskColor = endDate && (new Date().getTime() > endDate) ? theme.errorTextColor : '#FAC300';
-
     return (
         <View style={styles.container}>
             <ScrollView style={styles.scrollView}>
@@ -213,47 +223,24 @@ const Task = ({
                     <View style={styles.row}>
                         <Text style={styles.header}>{title}</Text>
                     </View>
-                    <TouchableOpacity style={styles.row}>
-                        <CompassIcon
-                            name='user-check'
-                            style={[styles.icon, color1]}
-                        />
-                        <DisplayName
-                            ids={assignee_ids}
-                            emptyText='Người thực hiện'
-                            style={[styles.title, color1]}
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[styles.row, !endDate && styles.lastRow]}>
-                        <CompassIcon
-                            name='user-check'
-                            style={[styles.icon, color2]}
-                        />
-                        <DisplayName
-                            ids={manager_ids}
-                            emptyText='Người quản lý'
-                            style={[styles.title, color2]}
-                        />
-                    </TouchableOpacity>
-                    {endDate &&
+                    {Boolean(end_date) &&
                     <View style={{flexDirection: 'row', paddingHorizontal: 16, paddingTop: 12}}>
                         <Text style={styles.sm}>{'Thời hạn: '}</Text>
                         <FormattedDate
                             format='DD/MM/YY'
                             style={styles.sm}
-                            value={endDate}
+                            value={end_date}
                         />
                     </View>
                     }
-                    {taskItems.length > 0 ?
-                        <View style={[styles.row, styles.lastRow, {paddingBottom: 12, paddingTop: endDate ? 2 : 12}]}>
-                            <ProgressBar
-                                color='#009AF9'
-                                progress={taskProgress}
-                                style={{height: 10, borderRadius: 5, backgroundColor: taskColor}}
-                            />
-                        </View> :
-                        <View style={{height: 12}}/>
+                    {items.length > 0 &&
+                    <View style={[styles.row, styles.lastRow, {paddingBottom: 12, paddingTop: end_date ? 2 : 12}]}>
+                        <ProgressBar
+                            color='#009AF9'
+                            progress={progress}
+                            style={{height: 10, borderRadius: 5, backgroundColor: progressColor}}
+                        />
+                    </View>
                     }
                 </View>
                 <Files
@@ -261,142 +248,183 @@ const Task = ({
                     location={Screens.TASK}
                     post={post}
                 />
-                {checklists.map((checklist: any, checklistIdx: number) => {
-                    const expanded = checklistExpand[checklistIdx];
-                    const items = checklist.items || [];
-                    const hasItems = items.length > 0;
-                    const progress = hasItems ? (items.filter((i: any) => ['closed', 'skipped'].includes(i.state)).length / items.length) : 0;
-                    const notDone = items.some((i: any) => i.state !== 'closed');
-                    const overdueDate = checklist.endDate || endDate;
-                    const overdue = overdueDate && (new Date().getTime() > overdueDate);
-                    const color = overdue ? theme.errorTextColor : '#FAC300';
-                    return (
-                        <View
-                            key={checklistIdx}
-                            style={styles.card}
-                        >
-                            <TouchableOpacity
-                                style={[styles.row, {borderBottomWidth: 0}]}
-                                onPress={() => setChecklistExpand({...checklistExpand, [checklistIdx]: !expanded})}
-                            >
-                                <Text style={styles.text}>
-                                    {checklist.title}
-                                </Text>
-                                {hasItems &&
-                                <CompassIcon
-                                    name={expanded ? 'chevron-up' : 'chevron-down'}
-                                    style={styles.icon}
-                                />
-                                }
-                            </TouchableOpacity>
-                            <View style={{flexDirection: 'row', paddingHorizontal: 16}}>
-                                {hasItems && (checklist.endDate || endDate) &&
-                                <View style={styles.inlineRow}>
-                                    <Text style={styles.sm}>{'Thời hạn: '}</Text>
-                                    <FormattedDate
-                                        format='DD/MM/YY'
-                                        style={styles.sm}
-                                        value={checklist.endDate || endDate}
+                {troubles &&
+                <View style={styles.card}>
+                    <View style={styles.row}>
+                        <Text style={styles.text}>{'Công việc trouble'}</Text>
+                    </View>
+                    {troubles.map((item: any, itemIdx: number) => {
+                        const done = ['done', 'completed'].includes(item.props.status);
+                        const icon = done ? 'checkbox-marked' : 'checkbox-blank-outline';
+                        const lastRow = itemIdx === items.length - 1;
+                        return (
+                            <View key={itemIdx}>
+                                <TouchableOpacity
+                                    disabled={presssed.current}
+                                    style={styles.row}
+                                    onPress={done ? undefined : () => updateIssueStatus(item, 'done')}
+                                >
+                                    <CompassIcon
+                                        name={icon}
+                                        style={styles.icon}
                                     />
+                                    <Text style={styles.title}>
+                                        {item.props.title || item.message}
+                                    </Text>
+                                </TouchableOpacity>
+                                {done &&
+                                <View style={[styles.row, lastRow && styles.lastRow, {paddingBottom: 12}]}>
+                                    <CompassIcon
+                                        name='account-outline'
+                                        style={styles.icon}
+                                    />
+                                    <DisplayName
+                                        ids={[item.props.completed_by || item.props.done_by]}
+                                        style={[styles.sm, {flex: 1, marginLeft: 8}]}
+                                    />
+                                    {item.updated_at &&
+                                        <FormattedDate
+                                            format='HH:mm DD/MM/YY'
+                                            style={styles.sm}
+                                            value={item.props.completed_at || item.props.done_at}
+                                        />
+                                    }
                                 </View>
                                 }
-                                <View style={styles.inlineRow}/>
-                                {notDone &&
-                                <CompassIcon
-                                    name='checkbox-blank-outline'
-                                    style={styles.icon}
-                                    onPress={() => updateChecklist(checklistIdx, {state: 'closed'})}
-                                />
+                            </View>
+                        );
+                    })}
+                </View>
+                }
+                {issues &&
+                <View style={styles.card}>
+                    <View style={styles.row}>
+                        <Text style={styles.text}>{'Công việc sự cố'}</Text>
+                    </View>
+                    {issues.map((item: any, itemIdx: number) => {
+                        const done = ['done', 'completed'].includes(item.props.status);
+                        const icon = done ? 'checkbox-marked' : 'checkbox-blank-outline';
+                        const lastRow = itemIdx === items.length - 1;
+                        return (
+                            <View key={itemIdx}>
+                                <TouchableOpacity
+                                    disabled={presssed.current}
+                                    style={styles.row}
+                                    onPress={done ? undefined : () => updateIssueStatus(item, 'done')}
+                                >
+                                    <CompassIcon
+                                        name={icon}
+                                        style={styles.icon}
+                                    />
+                                    <Text style={styles.title}>
+                                        {item.props.title || item.message}
+                                    </Text>
+                                </TouchableOpacity>
+                                {done &&
+                                <View style={[styles.row, lastRow && styles.lastRow, {paddingBottom: 12}]}>
+                                    <CompassIcon
+                                        name='account-outline'
+                                        style={styles.icon}
+                                    />
+                                    <DisplayName
+                                        ids={[item.props.completed_by || item.props.done_by]}
+                                        style={[styles.sm, {flex: 1, marginLeft: 8}]}
+                                    />
+                                    {item.updated_at &&
+                                        <FormattedDate
+                                            format='HH:mm DD/MM/YY'
+                                            style={styles.sm}
+                                            value={item.props.completed_at || item.props.done_at}
+                                        />
+                                    }
+                                </View>
                                 }
                             </View>
-                            {hasItems &&
-                            <View style={[styles.row, !expanded && styles.lastRow, {paddingBottom: 12, paddingTop: 2}]}>
-                                <ProgressBar
-                                    progress={progress}
-                                    color='#009AF9'
-                                    style={{height: 6, borderRadius: 3, backgroundColor: color}}
-                                />
+                        );
+                    })}
+                </View>
+                }
+                {checklists &&
+                <View style={styles.card}>
+                    <View style={styles.row}>
+                        <Text style={styles.text}>{'Công việc khác'}</Text>
+                    </View>
+                    {checklists.map((item: any, itemIdx: number) => {
+                        const closed = item.state === 'closed';
+                        const skip = item.state === 'skip';
+                        const skipped = item.state === 'skipped';
+                        const icon = closed ? 'checkbox-marked' : 'checkbox-blank-outline';
+                        const lastRow = itemIdx === items.length - 1;
+                        return (
+                            <View key={itemIdx}>
+                                <TouchableOpacity
+                                    disabled={presssed.current}
+                                    style={[styles.row, (closed || lastRow) && styles.lastRow, {paddingRight: 0}]}
+                                    onPress={closed ? undefined : () => updateChecklistItem(itemIdx, {state: 'closed'})}
+                                >
+                                    <CompassIcon
+                                        name={icon}
+                                        style={styles.icon}
+                                    />
+                                    <Text style={[styles.title, (skip || skipped) && styles.skipped]}>
+                                        {item.title}
+                                    </Text>
+                                    {!closed && !skipped &&
+                                    <TouchableOpacity
+                                        style={styles.action}
+                                        onPress={() => {
+                                            if (skip && isCreator) {
+                                                Alert.alert(
+                                                    'Phê duyệt đề xuất hủy đầu việc',
+                                                    undefined,
+                                                    [
+                                                        {
+                                                            text: 'Hủy',
+                                                            style: 'cancel',
+                                                        },
+                                                        {
+                                                            text: 'Đồng ý',
+                                                            style: 'destructive',
+                                                            onPress: () => updateChecklistItem(itemIdx, {state: 'skipped'}),
+                                                        },
+                                                    ], {cancelable: false},
+                                                );
+                                                return;
+                                            }
+                                            updateChecklistItem(itemIdx, {state: skip ? '' : 'skip'});
+                                        }}
+                                    >
+                                        <CompassIcon
+                                            name={skip && isCreator ? 'check' : 'close'}
+                                            style={styles.actionIcon}
+                                        />
+                                    </TouchableOpacity>
+                                    }
+                                </TouchableOpacity>
+                                {Boolean(item.updated_at && item.updated_by) &&
+                                <View style={[styles.row, lastRow && styles.lastRow, {paddingBottom: 12}]}>
+                                    <CompassIcon
+                                        name='account-outline'
+                                        style={styles.icon}
+                                    />
+                                    <DisplayName
+                                        ids={[item.updated_by]}
+                                        style={[styles.sm, {flex: 1, marginLeft: 8}]}
+                                    />
+                                    {item.updated_at &&
+                                        <FormattedDate
+                                            format='HH:mm DD/MM/YY'
+                                            style={styles.sm}
+                                            value={item.updated_at}
+                                        />
+                                    }
+                                </View>
+                                }
                             </View>
-                            }
-                            {expanded && items.map((item: any, itemIdx: number) => {
-                                const closed = item.state === 'closed';
-                                const skip = item.state === 'skip';
-                                const skipped = item.state === 'skipped';
-                                const icon = closed ? 'checkbox-marked' : 'checkbox-blank-outline';
-                                const lastRow = itemIdx === items.length - 1;
-                                return (
-                                    <View key={itemIdx}>
-                                        <TouchableOpacity
-                                            disabled={presssed.current}
-                                            style={[styles.row, (closed || lastRow) && styles.lastRow, {paddingRight: 0}]}
-                                            onPress={closed ? undefined : () => updateChecklistItem(checklistIdx, itemIdx, {state: 'closed'})}
-                                        >
-                                            <CompassIcon
-                                                name={icon}
-                                                style={styles.icon}
-                                            />
-                                            <Text style={[styles.title, (skip || skipped) && styles.skipped]}>
-                                                {item.title}
-                                            </Text>
-                                            {!closed && !skipped &&
-                                            <TouchableOpacity
-                                                style={styles.action}
-                                                onPress={() => {
-                                                    if (skip && isCreator) {
-                                                        Alert.alert(
-                                                            'Phê duyệt đề xuất hủy đầu việc',
-                                                            undefined,
-                                                            [
-                                                                {
-                                                                    text: 'Hủy',
-                                                                    style: 'cancel',
-                                                                },
-                                                                {
-                                                                    text: 'Đồng ý',
-                                                                    style: 'destructive',
-                                                                    onPress: () => {
-                                                                        updateChecklistItem(checklistIdx, itemIdx, {state: 'skipped'});
-                                                                    },
-                                                                },
-                                                            ], {cancelable: false},
-                                                        );
-                                                        return;
-                                                    }
-                                                    updateChecklistItem(checklistIdx, itemIdx, {state: skip ? '' : 'skip'});
-                                                }}
-                                            >
-                                                <CompassIcon
-                                                    name={skip && isCreator ? 'check' : 'close'}
-                                                    style={styles.actionIcon}
-                                                />
-                                            </TouchableOpacity>
-                                            }
-                                        </TouchableOpacity>
-                                        {Boolean(item.updated_at && item.updated_by) &&
-                                        <View style={[styles.row, lastRow && styles.lastRow, {paddingBottom: 12}]}>
-                                            <CompassIcon
-                                                name='account-outline'
-                                                style={styles.icon}
-                                            />
-                                            <DisplayName
-                                                ids={[item.updated_by]}
-                                                style={[styles.sm, {flex: 1, marginLeft: 8}]}
-                                            />
-                                            {item.updated_at &&
-                                                <FormattedDate
-                                                    format='HH:mm DD/MM/YY'
-                                                    style={styles.sm}
-                                                    value={item.updated_at}
-                                                />
-                                            }
-                                        </View>
-                                        }
-                                    </View>
-                                );
-                            })}
-                        </View>
-                    );
-                })}
+                        );
+                    })}
+                </View>
+                }
                 <View style={styles.card}>
                     <View style={styles.row}>
                         <CompassIcon
@@ -571,4 +599,4 @@ const Task = ({
     );
 };
 
-export default Task;
+export default Plan;

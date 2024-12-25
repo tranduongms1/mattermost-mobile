@@ -6,11 +6,12 @@ import {useIntl} from 'react-intl';
 import {Alert, Keyboard, ScrollView, Text, TextInput, TouchableOpacity, View} from 'react-native';
 
 import {addFilesToDraft, removeDraft} from '@actions/local/draft';
+import {fetchIssues} from '@actions/remote/issue';
 import CompassIcon from '@components/compass_icon';
 import DateRangePicker from '@components/date_range_picker';
 import ErrorText from '@components/error_text';
 import Uploads from '@components/post_draft/uploads';
-import {Preferences, Screens} from '@constants';
+import {Screens} from '@constants';
 import {useServerUrl} from '@context/server';
 import {useTheme} from '@context/theme';
 import useAndroidHardwareBackHandler from '@hooks/android_back_handler';
@@ -20,10 +21,8 @@ import NetworkManager from '@managers/network_manager';
 import {buildNavigationButton, dismissModal, goToScreen, setButtons} from '@screens/navigation';
 import {fileMaxWarning, fileSizeWarning} from '@utils/file';
 import PickerUtil from '@utils/file/file_picker';
-import {preventDoubleTap} from '@utils/tap';
 import {changeOpacity, makeStyleSheetFromTheme} from '@utils/theme';
 import {typography} from '@utils/typography';
-import {displayUsername} from '@utils/user';
 
 import type {AvailableScreens} from '@typings/screens/navigation';
 
@@ -71,11 +70,6 @@ const getStyleSheet = makeStyleSheetFromTheme((theme) => {
             fontSize: 20,
             color: theme.centerChannelColor,
         },
-        textIcon: {
-            color: theme.centerChannelColor,
-            width: 20,
-            ...typography('Heading', 75, 'SemiBold'),
-        },
         action: {
             padding: 16,
         },
@@ -102,7 +96,6 @@ const getStyleSheet = makeStyleSheetFromTheme((theme) => {
 type Props = {
     canUploadFiles: boolean;
     componentId: AvailableScreens;
-    channelDisplayName: string;
     currentChannelId: string;
     currentUserId: string;
     maxFileCount: number;
@@ -117,23 +110,22 @@ const close = () => {
 
 const makeCloseButton = (theme: Theme) => {
     const icon = CompassIcon.getImageSourceSync('close', 24, theme.sidebarHeaderTextColor);
-    return buildNavigationButton(CLOSE_BUTTON_ID, 'close.create-task.button', icon);
+    return buildNavigationButton(CLOSE_BUTTON_ID, 'close.create-plan.button', icon);
 };
 
 const ATTACH_BUTTON_ID = 'attach-button';
 const SAVE_BUTTON_ID = 'save-button';
-const CLOSE_BUTTON_ID = 'close-create-task';
+const CLOSE_BUTTON_ID = 'close-create-plan';
 const SEND_BUTTON_ID = 'send';
 
 type ErrorHandlers = {
     [clientId: string]: (() => void) | null;
 }
 
-function CreateTask({
+function CreatePlan({
     componentId,
     currentChannelId,
     currentUserId,
-    channelDisplayName,
     maxFileCount,
     maxFileSize,
     files,
@@ -144,17 +136,14 @@ function CreateTask({
     const styles = getStyleSheet(theme);
     const placeholder = changeOpacity(theme.centerChannelColor, 0.56);
     const [title, setTitle] = useState('');
-    const [assignees, setAssignees] = useState<any[]>([]);
-    const [managers, setManagers] = useState<any[]>([]);
     const [startDate, setStartDate] = useState<Date>();
     const [endDate, setEndDate] = useState<Date>();
+    const [troubles, setTroubles] = useState<any[]>([]);
+    const [issues, setIssues] = useState<any[]>([]);
     const [checklists, setChecklists] = useState<any[]>([]);
     const [submitting, setSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState('');
     const [uploadError, setUploadError] = useState<React.ReactNode>(null);
-
-    const assigneeNames = assignees.map((u) => displayUsername(u, 'vn', Preferences.DISPLAY_PREFER_NICKNAME)).join(', ');
-    const managerNames = managers.map((u) => displayUsername(u, 'vn', Preferences.DISPLAY_PREFER_NICKNAME)).join(', ');
 
     const attachButton = useMemo(() => {
         const icon = CompassIcon.getImageSourceSync('paperclip', 24, theme.sidebarHeaderTextColor);
@@ -216,10 +205,10 @@ function CreateTask({
             return;
         }
 
-        addFilesToDraft(serverUrl, currentChannelId, 'task', newFiles);
+        addFilesToDraft(serverUrl, currentChannelId, 'plan', newFiles);
 
         for (const file of newFiles) {
-            DraftUploadManager.prepareUpload(serverUrl, file, currentChannelId, 'task');
+            DraftUploadManager.prepareUpload(serverUrl, file, currentChannelId, 'plan');
             uploadErrorHandlers.current[file.clientId!] = DraftUploadManager.registerErrorHandler(file.clientId!, newUploadError);
         }
 
@@ -252,64 +241,10 @@ function CreateTask({
         }
     }, [files]);
 
-    const selectAssignee = useCallback(preventDoubleTap(() => {
-        goToScreen(
-            Screens.INTEGRATION_SELECTOR,
-            'Chọn người thực hiện',
-            {
-                dataSource: 'users',
-                isMultiselect: true,
-                handleSelect: setAssignees,
-            },
-        );
-    }), []);
-
-    const selectManager = useCallback(preventDoubleTap(() => {
-        goToScreen(
-            Screens.INTEGRATION_SELECTOR,
-            'Chọn người quản lý',
-            {
-                dataSource: 'users',
-                isMultiselect: true,
-                handleSelect: setManagers,
-            },
-        );
-    }), []);
-
     const handleSubmit = useCallback(async () => {
         if (!title) {
             setSubmitError('Vui lòng nhập tiêu đề');
             return;
-        }
-        if (!assignees.length && !managers.length) {
-            setSubmitError('Vui lòng chọn người thực hiện hoặc người quản lý');
-            return;
-        }
-        const cleanItems = (items: any[]) => items.filter((i: any) => i.title);
-        const cleanChecklists = checklists.
-            map((c) => ({...c, items: cleanItems(c.items)})).
-            filter((c) => c.title || c.items.length);
-
-        if (!cleanChecklists.length) {
-            setChecklists(cleanChecklists);
-            setSubmitError('Vui lòng nhập nội dung trống');
-            return;
-        }
-        for (const c of cleanChecklists) {
-            if (!c.title) {
-                setChecklists(cleanChecklists);
-                setSubmitError('Vui lòng nhập nội dung trống');
-                return;
-            }
-            if (c.items && c.items.some((i: any) => !i.title)) {
-                setChecklists(cleanChecklists);
-                setSubmitError('Vui lòng nhập chi tiết trống');
-                return;
-            }
-        }
-        for (const c of cleanChecklists) {
-            c.startDate = c.startDate && c.startDate.getTime();
-            c.endDate = c.endDate && c.endDate.getTime();
         }
 
         setSubmitting(true);
@@ -317,31 +252,29 @@ function CreateTask({
         const client = NetworkManager.getClient(serverUrl);
         try {
             await client.doFetch(
-                '/plugins/xerp/api/tasks',
+                '/plugins/xerp/api/plans',
                 {
                     method: 'post',
                     body: {
                         title,
                         channel_id: currentChannelId,
+                        start_date: startDate && startDate.getTime(),
+                        end_date: endDate && endDate.getTime(),
                         file_ids: files.map((f) => f.id),
-                        assignee_ids: assignees.map((u) => u.id),
-                        manager_ids: managers.map((u) => u.id),
-                        props: {
-                            startDate: startDate && startDate.getTime(),
-                            endDate: endDate && endDate.getTime(),
-                            checklists: cleanChecklists,
-                        },
+                        issues: issues.map((item) => item.value),
+                        troubles: troubles.map((item) => item.value),
+                        checklists: checklists.filter((item) => item.title),
                     },
                 },
             );
-            removeDraft(serverUrl, currentChannelId, 'task');
+            removeDraft(serverUrl, currentChannelId, 'plan');
             Alert.alert('Bạn đã giao việc thành công');
             close();
         } catch (e) {
             setSubmitError('Đã xảy ra lỗi vui lòng thử lại');
             setSubmitting(false);
         }
-    }, [serverUrl, title, files, assignees, managers, checklists]);
+    }, [serverUrl, title, files, troubles, issues, checklists]);
 
     useAndroidHardwareBackHandler(componentId, close);
     useNavButtonPressed(CLOSE_BUTTON_ID, componentId, close, [close]);
@@ -362,33 +295,6 @@ function CreateTask({
                             onChangeText={setTitle}
                         />
                     </View>
-                    <View style={[styles.row]}>
-                        <CompassIcon
-                            name='account-group'
-                            style={styles.icon}
-                        />
-                        <Text style={styles.title}>
-                            {channelDisplayName}
-                        </Text>
-                    </View>
-                    <TouchableOpacity
-                        style={[styles.row]}
-                        onPress={selectAssignee}
-                    >
-                        <Text style={styles.textIcon}>{'To:'}</Text>
-                        <Text style={styles.title}>
-                            {assigneeNames || 'Người thực hiện'}
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.row}
-                        onPress={selectManager}
-                    >
-                        <Text style={styles.textIcon}>{'CC:'}</Text>
-                        <Text style={styles.title}>
-                            {managerNames || 'Người quản lý'}
-                        </Text>
-                    </TouchableOpacity>
                     <DateRangePicker
                         style={[styles.row, styles.lastRow]}
                         startDate={startDate}
@@ -402,111 +308,181 @@ function CreateTask({
                     channelId={currentChannelId}
                     currentUserId={currentUserId}
                     files={files}
-                    rootId='task'
+                    rootId='plan'
                     uploadFileError={uploadError}
                 />
-                {checklists.map((checklist, checklistIdx) => (
-                    <View
-                        key={checklistIdx}
-                        style={styles.card}
-                    >
-                        <View style={styles.row}>
-                            <TextInput
-                                autoCorrect={false}
-                                placeholder='Nội dung'
-                                placeholderTextColor={placeholder}
-                                style={styles.text}
-                                value={checklist.title}
-                                onChangeText={(v) => {
-                                    const s = checklists.slice();
-                                    s.splice(checklistIdx, 1, {...checklist, title: v});
-                                    setChecklists(s);
-                                }}
-                            />
-                        </View>
-                        {Boolean(checklists.length > 1 && startDate && endDate) &&
-                        <DateRangePicker
-                            style={[styles.row, styles.lastRow]}
-                            startDate={checklist.startDate || startDate}
-                            endDate={checklist.endDate || endDate}
-                            maximumDate={endDate}
-                            minimumDate={startDate}
-                            onStartDateChange={(v) => {
-                                const s = checklists.slice();
-                                s.splice(checklistIdx, 1, {...checklist, startDate: v});
-                                setChecklists(s);
-                            }}
-                            onEndDateChange={(v) => {
-                                const s = checklists.slice();
-                                s.splice(checklistIdx, 1, {...checklist, endDate: v});
-                                setChecklists(s);
-                            }}
-                        />
-                        }
-                        {checklist.items.map((item: any, itemIdx: number) => (
-                            <View
-                                key={itemIdx}
-                                style={[styles.row, {paddingRight: 0}]}
-                            >
-                                <CompassIcon
-                                    name='checkbox-blank-outline'
-                                    style={styles.icon}
-                                />
-                                <TextInput
-                                    autoCorrect={false}
-                                    placeholder='Chi tiết'
-                                    placeholderTextColor={placeholder}
-                                    style={styles.input}
-                                    value={item.title}
-                                    onChangeText={(v) => {
-                                        const items = checklist.items.slice();
-                                        items.splice(itemIdx, 1, {title: v});
-                                        const s = checklists.slice();
-                                        s.splice(checklistIdx, 1, {...checklist, items});
-                                        setChecklists(s);
-                                    }}
-                                />
-                                <TouchableOpacity
-                                    style={styles.action}
-                                    onPress={() => {
-                                        const items = checklist.items.slice();
-                                        items.splice(itemIdx, 1);
-                                        const s = checklists.slice();
-                                        s.splice(checklistIdx, 1, {...checklist, items});
-                                        setChecklists(s);
-                                    }}
-                                >
-                                    <CompassIcon
-                                        name='close'
-                                        style={styles.actionIcon}
-                                    />
-                                </TouchableOpacity>
-                            </View>
-                        ))}
-                        <TouchableOpacity
-                            style={[styles.row, styles.lastRow]}
-                            onPress={() => {
-                                const s = checklists.slice();
-                                s.splice(checklistIdx, 1, {
-                                    ...checklist,
-                                    items: [...checklist.items, {title: ''}],
-                                });
-                                setChecklists(s);
-                            }}
+                <View style={styles.card}>
+                    <View style={styles.row}>
+                        <Text style={styles.text}>{'Công việc trouble'}</Text>
+                    </View>
+                    {troubles.map((item: any, idx: number) => (
+                        <View
+                            key={idx}
+                            style={[styles.row, {paddingRight: 0}]}
                         >
                             <CompassIcon
-                                name='plus'
+                                name='checkbox-blank-outline'
                                 style={styles.icon}
                             />
-                            <Text style={styles.title}>{'Thêm chi tiết'}</Text>
-                        </TouchableOpacity>
-                    </View>
-                ))}
-                <View style={styles.card}>
+                            <Text style={styles.input}>{item.text}</Text>
+                            <TouchableOpacity
+                                style={styles.action}
+                                onPress={() => {
+                                    const s = troubles.slice();
+                                    s.splice(idx, 1);
+                                    setTroubles(s);
+                                }}
+                            >
+                                <CompassIcon
+                                    name='close'
+                                    style={styles.actionIcon}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    ))}
                     <TouchableOpacity
                         style={[styles.row, styles.lastRow]}
                         onPress={() => {
-                            setChecklists([...checklists, {title: '', items: []}]);
+                            goToScreen(
+                                Screens.INTEGRATION_SELECTOR,
+                                'Chọn trouble',
+                                {
+                                    dataSource: 'troubles',
+                                    getDynamicOptions: async () => {
+                                        const res = await fetchIssues(serverUrl, {
+                                            channelId: currentChannelId,
+                                            type: 'customer',
+                                            statuses: ['open', 'confirmed'],
+                                        });
+                                        if (!res.posts) {
+                                            return [];
+                                        }
+                                        const selectedFilter = (p: any) => !troubles.some((t) => t.value === p.id);
+                                        return res.posts.filter(selectedFilter).map((p) => ({
+                                            text: p.props.title || p.message,
+                                            value: p.id,
+                                        }));
+                                    },
+                                    handleSelect: (item: any) => setTroubles([...troubles, item]),
+                                },
+                            );
+                        }}
+                    >
+                        <CompassIcon
+                            name='plus'
+                            style={styles.icon}
+                        />
+                        <Text style={styles.title}>{'Thêm trouble'}</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.card}>
+                    <View style={styles.row}>
+                        <Text style={styles.text}>{'Công việc sự cố'}</Text>
+                    </View>
+                    {issues.map((item: any, idx: number) => (
+                        <View
+                            key={idx}
+                            style={[styles.row, {paddingRight: 0}]}
+                        >
+                            <CompassIcon
+                                name='checkbox-blank-outline'
+                                style={styles.icon}
+                            />
+                            <Text style={styles.input}>{item.text}</Text>
+                            <TouchableOpacity
+                                style={styles.action}
+                                onPress={() => {
+                                    const s = issues.slice();
+                                    s.splice(idx, 1);
+                                    setIssues(s);
+                                }}
+                            >
+                                <CompassIcon
+                                    name='close'
+                                    style={styles.actionIcon}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    ))}
+                    <TouchableOpacity
+                        style={[styles.row, styles.lastRow]}
+                        onPress={() => {
+                            goToScreen(
+                                Screens.INTEGRATION_SELECTOR,
+                                'Chọn sự cố',
+                                {
+                                    dataSource: 'issues',
+                                    getDynamicOptions: async () => {
+                                        const res = await fetchIssues(serverUrl, {
+                                            channelId: currentChannelId,
+                                            type: 'technical',
+                                            statuses: ['open', 'confirmed'],
+                                        });
+                                        if (!res.posts) {
+                                            return [];
+                                        }
+                                        const selectedFilter = (p: any) => !issues.some((t) => t.value === p.id);
+                                        return res.posts.filter(selectedFilter).map((p) => ({
+                                            text: p.props.title || p.message,
+                                            value: p.id,
+                                        }));
+                                    },
+                                    handleSelect: (item: any) => setIssues([...issues, item]),
+                                },
+                            );
+                        }}
+                    >
+                        <CompassIcon
+                            name='plus'
+                            style={styles.icon}
+                        />
+                        <Text style={styles.title}>{'Thêm sự cố'}</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.card}>
+                    <View style={styles.row}>
+                        <Text style={styles.text}>{'Công việc khác'}</Text>
+                    </View>
+                    {checklists.map((item: any, idx: number) => (
+                        <View
+                            key={idx}
+                            style={[styles.row, {paddingRight: 0}]}
+                        >
+                            <CompassIcon
+                                name='checkbox-blank-outline'
+                                style={styles.icon}
+                            />
+                            <TextInput
+                                autoCorrect={false}
+                                placeholder='Nội dung chi tiết'
+                                placeholderTextColor={placeholder}
+                                style={styles.input}
+                                value={item.title}
+                                onChangeText={(v) => {
+                                    const s = checklists.slice();
+                                    s.splice(idx, 1, {title: v});
+                                    setChecklists(s);
+                                }}
+                            />
+                            <TouchableOpacity
+                                style={styles.action}
+                                onPress={() => {
+                                    const s = checklists.slice();
+                                    s.splice(idx, 1);
+                                    setChecklists(s);
+                                }}
+                            >
+                                <CompassIcon
+                                    name='close'
+                                    style={styles.actionIcon}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    ))}
+                    <TouchableOpacity
+                        style={[styles.row, styles.lastRow]}
+                        onPress={() => {
+                            setChecklists([...checklists, {title: ''}]);
                         }}
                     >
                         <CompassIcon
@@ -527,4 +503,4 @@ function CreateTask({
     );
 }
 
-export default CreateTask;
+export default CreatePlan;

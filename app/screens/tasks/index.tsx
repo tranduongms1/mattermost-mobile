@@ -42,6 +42,9 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => ({
         color: theme.centerChannelColor,
         fontSize: 16,
     },
+    active: {
+        color: theme.linkColor,
+    },
     count: {
         backgroundColor: 'red',
         borderRadius: 8,
@@ -57,6 +60,14 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => ({
     },
 }));
 
+const TABS = [
+    {type: 'out', statuses: ['new', 'confirmed']},
+    {type: 'in', statuses: ['new', 'confirmed']},
+    {},
+    {statuses: ['done', 'completed']},
+    {type: 'draff'},
+];
+
 function Tasks({
     channelId,
     componentId,
@@ -64,11 +75,13 @@ function Tasks({
     const theme = useTheme();
     const serverUrl = useServerUrl();
     const styles = getStyleSheet(theme);
-    const [filter, setFilter] = useState<any>({type: 'in', statuses: ['new', 'confirmed']});
+    const [tabIndex, setTabIndex] = useState(1);
     const [loading, setLoading] = useState(true);
     const [counts] = useState<any>({});
     const [ids, setIds] = useState<string[]>([]);
     const [refreshing, setRefreshing] = useState(false);
+
+    const filter = TABS[tabIndex];
 
     const fetchData = useCallback(async () => {
         const results = await fetchTasks(serverUrl, {
@@ -103,44 +116,36 @@ function Tasks({
             <View style={styles.header}>
                 <TouchableOpacity
                     style={styles.button}
-                    onPress={() => setFilter({
-                        type: 'out',
-                        statuses: ['new', 'confirmed'],
-                    })}
+                    onPress={() => setTabIndex(0)}
                 >
-                    <Text style={styles.text}>{'Tôi giao'}</Text>
+                    <Text style={[styles.text, tabIndex === 0 && styles.active]}>{'Tôi giao'}</Text>
                     {Boolean(counts.out) &&
                     <Text style={styles.count}>{counts.out}</Text>
                     }
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.button}
-                    onPress={() => setFilter({
-                        type: 'in',
-                        statuses: ['new', 'confirmed'],
-                    })}
+                    onPress={() => setTabIndex(1)}
                 >
-                    <Text style={styles.text}>{'Cần làm'}</Text>
+                    <Text style={[styles.text, tabIndex === 1 && styles.active]}>{'Cần làm'}</Text>
                     {Boolean(counts.in) &&
                     <Text style={styles.count}>{counts.in}</Text>
                     }
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button}>
-                    <Text style={styles.text}>{'Quản lý'}</Text>
+                    <Text style={[styles.text, tabIndex === 2 && styles.active]}>{'Quản lý'}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.button}
-                    onPress={() => setFilter({
-                        statuses: ['done', 'completed'],
-                    })}
+                    onPress={() => setTabIndex(3)}
                 >
-                    <Text style={styles.text}>{'Xong'}</Text>
+                    <Text style={[styles.text, tabIndex === 3 && styles.active]}>{'Xong'}</Text>
                     {Boolean(counts.done) &&
                     <Text style={styles.count}>{counts.done}</Text>
                     }
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.button}>
-                    <Text style={styles.text}>{'Nháp'}</Text>
+                    <Text style={[styles.text, tabIndex === 4 && styles.active]}>{'Nháp'}</Text>
                 </TouchableOpacity>
             </View>
             <TaskList
