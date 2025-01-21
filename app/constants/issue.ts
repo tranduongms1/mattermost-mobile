@@ -14,7 +14,7 @@ type Action = {
 }
 
 export const ACTIONS: Record<string, Action[]> = {
-    open: [
+    new: [
         {
             iconName: 'check',
             text: 'Xác nhận',

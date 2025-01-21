@@ -19,7 +19,9 @@ import Failed from './failed';
 import Issue from './issue';
 import IssueUpdated from './issue_updated';
 import Message from './message';
+import Plan from './plan';
 import Reactions from './reactions';
+import RecurringTasks from './recurring_tasks';
 import Task from './task';
 
 import type PostModel from '@typings/database/models/servers/post';
@@ -141,7 +143,7 @@ const Body = ({
             barStyle.push(style.replyMention);
         }
 
-        return undefined && barStyle;
+        return undefined;
     }, []);
 
     const onLayout = useCallback((e: LayoutChangeEvent) => {
@@ -180,9 +182,25 @@ const Body = ({
                 theme={theme}
             />
         );
+    } else if (post.type === 'custom_plan') {
+        message = (
+            <Plan
+                location={location}
+                post={post}
+                theme={theme}
+            />
+        );
     } else if (post.type === 'custom_task') {
         message = (
             <Task
+                location={location}
+                post={post}
+                theme={theme}
+            />
+        );
+    } else if (post.type === 'custom_recurring_tasks') {
+        message = (
+            <RecurringTasks
                 location={location}
                 post={post}
                 theme={theme}

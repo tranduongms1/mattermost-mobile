@@ -14,13 +14,13 @@ import type PostModel from '@typings/database/models/servers/post';
 
 type OwnProps = {
     ids: string[];
-    statuses: string[];
+    statuses?: string[];
 }
 
-const enhance = withObservables(['ids'], ({database, ids, statuses}: WithDatabaseArgs & OwnProps) => {
+const enhance = withObservables(['ids'], ({database, ids, statuses = []}: WithDatabaseArgs & OwnProps) => {
     const filterByStatus = (post: PostModel) => statuses.includes(post.props.status);
     const sort = (a: PostModel, b: PostModel) => {
-        if (statuses[0] !== 'completed') {
+        if (!statuses.includes('completed')) {
             if (a.props.priority && !b.props.priority) {
                 return -1;
             }

@@ -9,7 +9,7 @@ import {observeChannel} from '@queries/servers/channel';
 import {observePost} from '@queries/servers/post';
 import {observeCurrentUserId} from '@queries/servers/system';
 
-import Task from './task';
+import RecurringTasks from './recurring_tasks';
 
 import type {WithDatabaseArgs} from '@typings/database/database';
 
@@ -20,6 +20,7 @@ const enhance = withObservables(['id'], ({database, id}: WithDatabaseArgs & {id:
         switchMap((c) => of$(c?.displayName)),
     );
     const currentUserId = observeCurrentUserId(database);
+
     return {
         channelDisplayName,
         currentUserId,
@@ -27,4 +28,4 @@ const enhance = withObservables(['id'], ({database, id}: WithDatabaseArgs & {id:
     };
 });
 
-export default withDatabase(enhance(Task));
+export default withDatabase(enhance(RecurringTasks));

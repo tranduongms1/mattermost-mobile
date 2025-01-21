@@ -62,8 +62,8 @@ const ChannelActions = ({
 
     const fetchData = useCallback(async () => {
         const res = await Promise.all([
-            getIssuesCount(serverUrl, {channelId, type: 'customer', statuses: ['open', 'confirmed']}),
-            getIssuesCount(serverUrl, {channelId, type: 'technical', statuses: ['open', 'confirmed']}),
+            getIssuesCount(serverUrl, {channelId, type: 'customer', statuses: ['new', 'confirmed']}),
+            getIssuesCount(serverUrl, {channelId, type: 'technical', statuses: ['new', 'confirmed']}),
             getIssuesCount(serverUrl, {channelId, statuses: ['done']}),
         ]);
         setCounts({
@@ -84,7 +84,7 @@ const ChannelActions = ({
             if (post.type === 'custom_issue') {
                 const type = post.props.issue_type;
                 const key = type === 'customer' ? 'trouble' : 'issue';
-                const res = await getIssuesCount(serverUrl, {channelId, type, statuses: ['open', 'confirmed']});
+                const res = await getIssuesCount(serverUrl, {channelId, type, statuses: ['new', 'confirmed']});
                 setCounts((s: any) => ({...s, [key]: res}));
             }
         };
@@ -114,7 +114,7 @@ const ChannelActions = ({
                 <TouchableOpacity
                     style={styles.button}
                     onPress={() => goToScreen(Screens.ISSUES, '',
-                        {channelId, type: 'customer', statuses: ['open', 'confirmed']},
+                        {channelId, type: 'customer', statuses: ['new', 'confirmed']},
                         getOptions('Trouble'),
                     )}
                 >
@@ -126,7 +126,7 @@ const ChannelActions = ({
                 <TouchableOpacity
                     style={styles.button}
                     onPress={() => goToScreen(Screens.ISSUES, '',
-                        {channelId, type: 'technical', statuses: ['open', 'confirmed']},
+                        {channelId, type: 'technical', statuses: ['new', 'confirmed']},
                         getOptions('Sự cố'),
                     )}
                 >

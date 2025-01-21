@@ -105,6 +105,9 @@ Navigation.setLazyComponentRegistrator((screenName) => {
         case Screens.CREATE_OR_EDIT_CHANNEL:
             screen = withServerDatabase(require('@screens/create_or_edit_channel').default);
             break;
+        case Screens.CREATE_PLAN:
+            screen = withServerDatabase(require('@screens/create_plan').default);
+            break;
         case Screens.CREATE_POST:
             screen = withServerDatabase(require('@screens/create_post').default);
             break;
@@ -202,6 +205,12 @@ Navigation.setLazyComponentRegistrator((screenName) => {
         case Screens.PINNED_MESSAGES:
             screen = withServerDatabase(require('@screens/pinned_messages').default);
             break;
+        case Screens.PLAN:
+            screen = withServerDatabase(require('@screens/plan').default);
+            break;
+        case Screens.PLANS:
+            screen = withServerDatabase(require('@screens/tasks').default);
+            break;
         case Screens.POST_OPTIONS:
             screen = withServerDatabase(require('@screens/post_options').default);
             break;
@@ -210,6 +219,9 @@ Navigation.setLazyComponentRegistrator((screenName) => {
             break;
         case Screens.REACTIONS:
             screen = withServerDatabase(require('@screens/reactions').default);
+            break;
+        case Screens.RECURRING_TASKS:
+            screen = withServerDatabase(require('@screens/recurring_tasks').default);
             break;
         case Screens.REVIEW_APP:
             screen = withServerDatabase(require('@screens/review_app').default);

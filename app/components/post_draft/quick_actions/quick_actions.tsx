@@ -8,6 +8,7 @@ import CameraAction from './camera_quick_action';
 import FileAction from './file_quick_action';
 import ImageAction from './image_quick_action';
 import IssueAction from './issue_action';
+import PlanAction from './plan_action';
 import PostPriorityAction from './post_priority_action';
 import TaskAction from './task_action';
 import TroubleAction from './trouble_action';
@@ -18,6 +19,7 @@ type Props = {
     fileCount: number;
     isPostPriorityEnabled: boolean;
     canShowPostPriority?: boolean;
+    channelType?: ChannelType;
     maxFileCount: number;
 
     // Draft Handler
@@ -43,6 +45,7 @@ export default function QuickActions({
     fileCount,
     isPostPriorityEnabled,
     canShowPostPriority,
+    channelType,
     maxFileCount,
     addFiles,
     postPriority,
@@ -88,6 +91,11 @@ export default function QuickActions({
             <TroubleAction/>
             <IssueAction/>
             <TaskAction/>
+            {channelType === 'P' &&
+            <React.Fragment>
+                <PlanAction/>
+            </React.Fragment>
+            }
         </View>
     );
 }

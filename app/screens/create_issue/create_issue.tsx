@@ -274,7 +274,7 @@ function CreateIssue({
     }, [files]);
 
     const handleSubmit = useCallback(async () => {
-        const {channel_id, customer_attitude, customer_name, room, title, ...data} = values;
+        const {channel_id, customer_attitude, customer_name, room, title, description} = values;
         if (type === 'customer' && !customer_name) {
             setSubmitError('Vui lòng nhập tên khách hàng');
             return;
@@ -296,20 +296,18 @@ function CreateIssue({
         const client = NetworkManager.getClient(serverUrl);
         try {
             await client.doFetch(
-                '/plugins/xerp/api/issues',
+                client.urlVersion + '/issues',
                 {
                     method: 'post',
                     body: {
                         type,
                         title,
-                        ...data,
+                        description,
                         channel_id: channel_id || channels[0].id,
                         file_ids: files.map((f) => f.id),
-                        props: {
-                            customer_attitude,
-                            customer_name,
-                            room,
-                        },
+                        customer_attitude,
+                        customer_name,
+                        room,
                     },
                 },
             );

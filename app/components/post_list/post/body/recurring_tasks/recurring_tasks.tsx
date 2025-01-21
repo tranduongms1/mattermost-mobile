@@ -1,27 +1,26 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
-import React, {useCallback} from 'react';
-import {Text, TouchableOpacity, View, type StyleProp, type ViewStyle} from 'react-native';
+import {Button} from '@rneui/base';
+import React, {useCallback, useRef} from 'react';
+import {Alert, Text, TouchableOpacity, View, type StyleProp, type ViewStyle} from 'react-native';
 
+import {patchTask} from '@actions/remote/task';
 import CompassIcon from '@components/compass_icon';
-import DisplayName from '@components/display_name';
 import FormattedDate from '@components/formatted_date';
 import ProgressBar from '@components/progress_bar';
 import {Screens} from '@constants';
+import {ACTIONS} from '@constants/task';
 import {useServerUrl} from '@context/server';
 import {goToScreen, openAsBottomSheet} from '@screens/navigation';
 import {preventDoubleTap} from '@utils/tap';
 import {changeOpacity, makeStyleSheetFromTheme} from '@utils/theme';
 import {typography} from '@utils/typography';
 
-import AttachmentAuthor from '../content/message_attachments/attachment_author';
-
 import type PostModel from '@typings/database/models/servers/post';
 
 type Props = {
     channelDisplayName: string;
-    creatorName: string;
     location: string;
     post: PostModel;
     style?: StyleProp<ViewStyle>;
@@ -41,11 +40,6 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
             flexDirection: 'row',
             alignItems: 'center',
         },
-        priority: {
-            color: 'red',
-            fontSize: 16,
-            marginRight: 2,
-        },
         date: {
             color: changeOpacity(theme.centerChannelColor, 0.5),
             fontSize: 11,
@@ -64,41 +58,66 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
             color: changeOpacity(theme.centerChannelColor, 0.56),
             ...typography('Body', 75, 'Regular'),
         },
+        actions: {
+            alignItems: 'center',
+            flexDirection: 'row',
+            marginTop: 12,
+        },
+        button: {
+            marginRight: 12,
+            backgroundColor: changeOpacity(theme.centerChannelColor, 0.08),
+        },
+        activeColor: {
+            color: theme.buttonBg,
+        },
+        buttonDisabled: {
+            opacity: 0.5,
+        },
+        icon: {
+            color: theme.centerChannelColor,
+        },
+        text: {
+            color: theme.centerChannelColor,
+            fontSize: 15,
+            fontFamily: 'OpenSans-SemiBold',
+            lineHeight: 17,
+            marginLeft: 8,
+        },
     };
 });
 
-const Task = ({
+const RecurringTasks = ({
     channelDisplayName,
-    creatorName,
     post,
     location,
     style,
     theme,
 }: Props) => {
+    const presssed = useRef(false);
     const serverUrl = useServerUrl();
     const styles = getStyleSheet(theme);
 
     const {
         id,
+        message,
         props: {
             title,
-            priority,
-            manager_ids,
-            assignee_ids,
             endDate,
             checklists,
+            status,
         },
         createAt,
     } = post;
 
     const canShowOption = location === 'TaskList';
-    const items = (checklists || []).reduce((p: any[], c: any) => (c.items ? p.concat(c.items) : p), []);
-    const progress = items.length && (items.filter((i: any) => ['closed', 'skipped'].includes(i.state)).length / items.length);
+    const doneFilter = (item: any) => ['closed', 'skipped'].includes(item.state);
+    const items = checklists || [];
+    const progress = items.length ? items.filter(doneFilter).length / items.length : 1;
     const overdue = endDate && (new Date().getTime() > endDate);
     const progressColor = overdue ? theme.errorTextColor : '#FAC300';
 
     const handlePress = useCallback(preventDoubleTap(() => {
-        goToScreen(Screens.TASK, '', {id}, {
+        goToScreen(Screens.RECURRING_TASKS, '', {id}, {
             topBar: {
                 title: {
                     text: 'Chi tiết công việc',
@@ -121,6 +140,23 @@ const Task = ({
         });
     };
 
+    const updateStatus = useCallback(preventDoubleTap(async (newStatus) => {
+        if (!newStatus) {
+            return;
+        }
+        if (newStatus === 'done' && progress !== 1) {
+            Alert.alert('Không thể báo xong do chưa hoàn thành hết việc');
+            return;
+        }
+        if (!presssed.current) {
+            presssed.current = true;
+            patchTask(serverUrl, post.id, {status: newStatus}).
+                finally(() => {
+                    presssed.current = false;
+                });
+        }
+    }), [serverUrl, id, progress]);
+
     return (
         <TouchableOpacity
             onPress={handlePress}
@@ -129,16 +165,7 @@ const Task = ({
             style={[styles.container, style]}
         >
             <View style={styles.header}>
-                <AttachmentAuthor
-                    name={creatorName}
-                    theme={theme}
-                />
-                {priority && (
-                    <CompassIcon
-                        style={styles.priority}
-                        name='alarm-plus'
-                    />
-                )}
+                <Text>{}</Text>
                 <FormattedDate
                     format='HH:mm DD/MM/YY'
                     style={styles.date}
@@ -146,7 +173,7 @@ const Task = ({
                 />
             </View>
             <View style={styles.title}>
-                <Text style={styles.titleText}>{title}</Text>
+                <Text style={styles.titleText}>{title || message}</Text>
             </View>
             {endDate &&
             <View style={{flexDirection: 'row', paddingBottom: 2}}>
@@ -167,14 +194,27 @@ const Task = ({
                 />
             </View>
             }
-            <View style={styles.title}>
-                <DisplayName
-                    style={styles.sm}
-                    ids={[...manager_ids || [], ...assignee_ids || []]}
-                />
+            <View style={styles.actions}>
+                {ACTIONS[status].map((action) => (
+                    <Button
+                        key={action.text}
+                        buttonStyle={styles.button}
+                        disabledStyle={styles.buttonDisabled}
+                        onPress={() => updateStatus(action.newStatus)}
+                    >
+                        <CompassIcon
+                            size={18}
+                            name={action.iconName}
+                            style={[styles.icon, !action.newStatus && styles.activeColor]}
+                        />
+                        <Text style={[styles.text, !action.newStatus && styles.activeColor]}>
+                            {action.text}
+                        </Text>
+                    </Button>
+                ))}
             </View>
         </TouchableOpacity>
     );
 };
 
-export default Task;
+export default RecurringTasks;

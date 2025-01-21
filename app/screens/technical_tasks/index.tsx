@@ -84,10 +84,10 @@ const TechnicalTasks = ({componentId}: Props) => {
 
     const fetch = () => {
         Promise.all([
-            getIssuesCount(serverUrl, {channelId, type: 'customer', statuses: ['open', 'confirmed']}),
+            getIssuesCount(serverUrl, {channelId, type: 'customer', statuses: ['new', 'confirmed']}),
             getIssuesCount(serverUrl, {channelId, type: 'customer', statuses: ['done']}),
             getIssuesCount(serverUrl, {channelId, type: 'customer', statuses: ['completed']}),
-            getIssuesCount(serverUrl, {channelId, type: 'technical', statuses: ['open', 'confirmed']}),
+            getIssuesCount(serverUrl, {channelId, type: 'technical', statuses: ['new', 'confirmed']}),
             getIssuesCount(serverUrl, {channelId, type: 'technical', statuses: ['done']}),
             getIssuesCount(serverUrl, {channelId, type: 'technical', statuses: ['completed']}),
         ]).then((res) => setCounts({
@@ -143,7 +143,7 @@ const TechnicalTasks = ({componentId}: Props) => {
                         containerStyle={[styles.option, styles.first]}
                         action={openIssues(
                             'Trouble',
-                            'customer', ['open', 'confirmed'],
+                            'customer', ['new', 'confirmed'],
                         )}
                     />
                     <OptionItem
@@ -180,7 +180,7 @@ const TechnicalTasks = ({componentId}: Props) => {
                         containerStyle={[styles.option, styles.first]}
                         action={openIssues(
                             'Sự cố',
-                            'technical', ['open', 'confirmed'],
+                            'technical', ['new', 'confirmed'],
                         )}
                     />
                     <OptionItem

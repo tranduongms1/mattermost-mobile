@@ -5,7 +5,6 @@ import React, {useCallback} from 'react';
 import {Text, TouchableOpacity, View, type StyleProp, type ViewStyle} from 'react-native';
 
 import CompassIcon from '@components/compass_icon';
-import DisplayName from '@components/display_name';
 import FormattedDate from '@components/formatted_date';
 import ProgressBar from '@components/progress_bar';
 import {Screens} from '@constants';
@@ -24,6 +23,8 @@ type Props = {
     creatorName: string;
     location: string;
     post: PostModel;
+    troubles: PostModel[];
+    issues: PostModel[];
     style?: StyleProp<ViewStyle>;
     theme: Theme;
 }
@@ -32,8 +33,12 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
     return {
         container: {
             borderRadius: 4,
-            borderColor: changeOpacity(theme.centerChannelColor, 0.15),
+            borderBottomColor: changeOpacity(theme.centerChannelColor, 0.15),
+            borderRightColor: changeOpacity(theme.centerChannelColor, 0.15),
+            borderTopColor: changeOpacity(theme.centerChannelColor, 0.15),
+            borderLeftColor: '#039990',
             borderWidth: 1,
+            borderLeftWidth: 3,
             marginTop: 5,
             padding: 12,
         },
@@ -67,10 +72,12 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
     };
 });
 
-const Task = ({
+const Plan = ({
     channelDisplayName,
     creatorName,
     post,
+    troubles,
+    issues,
     location,
     style,
     theme,
@@ -83,25 +90,24 @@ const Task = ({
         props: {
             title,
             priority,
-            manager_ids,
-            assignee_ids,
-            endDate,
+            end_date,
             checklists,
         },
         createAt,
     } = post;
 
-    const canShowOption = location === 'TaskList';
-    const items = (checklists || []).reduce((p: any[], c: any) => (c.items ? p.concat(c.items) : p), []);
-    const progress = items.length && (items.filter((i: any) => ['closed', 'skipped'].includes(i.state)).length / items.length);
-    const overdue = endDate && (new Date().getTime() > endDate);
+    const canShowOption = location === 'PlanList';
+    const doneFilter = (i: any) => ['closed', 'skipped'].includes(i.state) || i.props?.status === 'completed';
+    const items: any[] = troubles.concat(issues).concat(checklists || []);
+    const progress = items.length && items.filter(doneFilter).length / items.length;
+    const overdue = end_date && (new Date().getTime() > end_date);
     const progressColor = overdue ? theme.errorTextColor : '#FAC300';
 
     const handlePress = useCallback(preventDoubleTap(() => {
-        goToScreen(Screens.TASK, '', {id}, {
+        goToScreen(Screens.PLAN, '', {id}, {
             topBar: {
                 title: {
-                    text: 'Chi tiết công việc',
+                    text: 'Chi tiết kế hoạch',
                 },
                 subtitle: {
                     color: changeOpacity(theme.sidebarHeaderTextColor, 0.72),
@@ -148,13 +154,13 @@ const Task = ({
             <View style={styles.title}>
                 <Text style={styles.titleText}>{title}</Text>
             </View>
-            {endDate &&
+            {Boolean(end_date) &&
             <View style={{flexDirection: 'row', paddingBottom: 2}}>
                 <Text style={styles.sm}>{'Thời hạn: '}</Text>
                 <FormattedDate
                     format='DD/MM/YY'
                     style={styles.sm}
-                    value={endDate}
+                    value={end_date}
                 />
             </View>
             }
@@ -167,14 +173,8 @@ const Task = ({
                 />
             </View>
             }
-            <View style={styles.title}>
-                <DisplayName
-                    style={styles.sm}
-                    ids={[...manager_ids || [], ...assignee_ids || []]}
-                />
-            </View>
         </TouchableOpacity>
     );
 };
 
-export default Task;
+export default Plan;
