@@ -84,6 +84,9 @@ Navigation.setLazyComponentRegistrator((screenName) => {
         case Screens.CHANNEL_NOTIFICATION_PREFERENCES:
             screen = withServerDatabase(require('@screens/channel_notification_preferences').default);
             break;
+        case Screens.CHANNEL_COMPLETED:
+            screen = withServerDatabase(require('@screens/channel_completed').default);
+            break;
         case Screens.CHANNEL_FILES:
             screen = withServerDatabase(require('@screens/channel_files').default);
             break;
@@ -96,8 +99,20 @@ Navigation.setLazyComponentRegistrator((screenName) => {
         case Screens.CONVERT_GM_TO_CHANNEL:
             screen = withServerDatabase(require('@screens/convert_gm_to_channel').default);
             break;
+        case Screens.CREATE_ISSUE:
+            screen = withServerDatabase(require('@screens/create_issue').default);
+            break;
         case Screens.CREATE_OR_EDIT_CHANNEL:
             screen = withServerDatabase(require('@screens/create_or_edit_channel').default);
+            break;
+        case Screens.CREATE_PLAN:
+            screen = withServerDatabase(require('@screens/create_plan').default);
+            break;
+        case Screens.CREATE_POST:
+            screen = withServerDatabase(require('@screens/create_post').default);
+            break;
+        case Screens.CREATE_TASK:
+            screen = withServerDatabase(require('@screens/create_task').default);
             break;
         case Screens.CUSTOM_STATUS:
             screen = withServerDatabase(require('@screens/custom_status').default);
@@ -157,6 +172,12 @@ Navigation.setLazyComponentRegistrator((screenName) => {
             );
             return;
         }
+        case Screens.ISSUE:
+            screen = withServerDatabase(require('@screens/issue').default);
+            break;
+        case Screens.ISSUES:
+            screen = withServerDatabase(require('@screens/issues').default);
+            break;
         case Screens.JOIN_TEAM:
             screen = withServerDatabase(require('@screens/join_team').default);
             break;
@@ -168,6 +189,9 @@ Navigation.setLazyComponentRegistrator((screenName) => {
             break;
         case Screens.MANAGE_CHANNEL_MEMBERS:
             screen = withServerDatabase(require('@screens/manage_channel_members').default);
+            break;
+        case Screens.MENTIONS:
+            screen = withServerDatabase(require('@screens/recent_mentions').default);
             break;
         case Screens.MFA:
             screen = withIntl(require('@screens/mfa').default);
@@ -181,6 +205,12 @@ Navigation.setLazyComponentRegistrator((screenName) => {
         case Screens.PINNED_MESSAGES:
             screen = withServerDatabase(require('@screens/pinned_messages').default);
             break;
+        case Screens.PLAN:
+            screen = withServerDatabase(require('@screens/plan').default);
+            break;
+        case Screens.PLANS:
+            screen = withServerDatabase(require('@screens/tasks').default);
+            break;
         case Screens.POST_OPTIONS:
             screen = withServerDatabase(require('@screens/post_options').default);
             break;
@@ -190,8 +220,14 @@ Navigation.setLazyComponentRegistrator((screenName) => {
         case Screens.REACTIONS:
             screen = withServerDatabase(require('@screens/reactions').default);
             break;
+        case Screens.RECURRING_TASKS:
+            screen = withServerDatabase(require('@screens/recurring_tasks').default);
+            break;
         case Screens.REVIEW_APP:
             screen = withServerDatabase(require('@screens/review_app').default);
+            break;
+        case Screens.SAVED_MESSAGES:
+            screen = withServerDatabase(require('@screens/saved_messages').default);
             break;
         case Screens.SETTINGS:
             screen = withServerDatabase(require('@screens/settings').default);
@@ -254,8 +290,17 @@ Navigation.setLazyComponentRegistrator((screenName) => {
         case Screens.TABLE:
             screen = withServerDatabase(require('@screens/table').default);
             break;
+        case Screens.TASK:
+            screen = withServerDatabase(require('@screens/task').default);
+            break;
+        case Screens.TASKS:
+            screen = withServerDatabase(require('@screens/tasks').default);
+            break;
         case Screens.TEAM_SELECTOR_LIST:
             screen = withServerDatabase(require('@screens/convert_gm_to_channel/team_selector_list').default);
+            break;
+        case Screens.TECHNICAL_TASKS:
+            screen = withServerDatabase(require('@screens/technical_tasks').default);
             break;
         case Screens.TERMS_OF_SERVICE:
             screen = withServerDatabase(require('@screens/terms_of_service').default);

@@ -6,7 +6,8 @@ import React from 'react';
 import {of as of$, combineLatest} from 'rxjs';
 import {switchMap, distinctUntilChanged} from 'rxjs/operators';
 
-import {Permissions, Preferences, Screens} from '@constants';
+import {General, Permissions, Preferences, Screens} from '@constants';
+import {observeChannel} from '@queries/servers/channel';
 import {queryFilesForPost} from '@queries/servers/file';
 import {observePost, observePostAuthor, queryPostsBetween, observeIsPostPriorityEnabled} from '@queries/servers/post';
 import {queryReactionsForPost} from '@queries/servers/reaction';
@@ -97,6 +98,9 @@ const withPost = withObservables(
         const isOwner = currentUser?.id === post.userId;
         const author = post.userId ? observePostAuthor(database, post) : of$(undefined);
         const canDelete = observePermissionForPost(database, post, currentUser, isOwner ? Permissions.DELETE_POST : Permissions.DELETE_OTHERS_POSTS, false);
+        const isArticle = observeChannel(database, post.channelId).pipe(
+            switchMap((c) => of$(c?.name === General.DEFAULT_CHANNEL)),
+        );
         const isEphemeral = of$(isPostEphemeral(post));
 
         if (post.props?.add_channel_member && isPostEphemeral(post) && currentUser) {
@@ -117,7 +121,7 @@ const withPost = withObservables(
         }
 
         let differentThreadSequence = true;
-        if (post.rootId) {
+        if (previousPost?.userId === post.userId && post.rootId) {
             differentThreadSequence = previousPost?.rootId ? previousPost?.rootId !== post.rootId : previousPost?.id !== post.rootId;
             isLastReply = of$(!(nextPost?.rootId === post.rootId));
         }
@@ -145,6 +149,7 @@ const withPost = withObservables(
             hasFiles,
             hasReplies,
             highlightReplyBar,
+            isArticle,
             isConsecutivePost,
             isEphemeral,
             isFirstReply: of$(isFirstReply(post, previousPost)),

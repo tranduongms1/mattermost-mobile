@@ -17,8 +17,9 @@ import {queryDisplayNamePreferences} from '@queries/servers/preference';
 import {prepareCommonSystemValues, type PrepareCommonSystemValuesArgs, getCommonSystemValues, getCurrentTeamId, setCurrentChannelId, getCurrentUserId, getConfig, getLicense} from '@queries/servers/system';
 import {addChannelToTeamHistory, addTeamToTeamHistory, getTeamById, removeChannelFromTeamHistory} from '@queries/servers/team';
 import {getCurrentUser, queryUsersById} from '@queries/servers/user';
-import {dismissAllModalsAndPopToRoot, dismissAllModalsAndPopToScreen} from '@screens/navigation';
+import {dismissAllModalsAndPopToRoot, dismissAllModalsAndPopToScreen, resetToHome} from '@screens/navigation';
 import EphemeralStore from '@store/ephemeral_store';
+import NavigationStore from '@store/navigation_store';
 import {isTablet} from '@utils/helpers';
 import {logError, logInfo} from '@utils/log';
 import {displayGroupMessageName, displayUsername, getUserIdFromChannelName} from '@utils/user';
@@ -88,6 +89,14 @@ export async function switchToChannel(serverUrl: string, channelId: string, team
                 if (isTabletDevice) {
                     dismissAllModalsAndPopToRoot();
                     DeviceEventEmitter.emit(NavigationConstants.NAVIGATION_HOME, Screens.CHANNEL);
+                } else if (channel.name === General.DEFAULT_CHANNEL) {
+                    if (NavigationStore.getVisibleScreen() !== Screens.HOME) {
+                        await resetToHome();
+                        await NavigationStore.waitUntilScreenIsTop(Screens.HOME);
+                    }
+                    DeviceEventEmitter.emit('NAVIGATE_TO_TAB', {
+                        screen: Screens.NEWS,
+                    });
                 } else {
                     dismissAllModalsAndPopToScreen(Screens.CHANNEL, '', undefined, {topBar: {visible: false}});
                 }
@@ -173,6 +182,7 @@ export async function markChannelAsViewed(serverUrl: string, channelId: string, 
         member.prepareUpdate((m) => {
             m.isUnread = false;
             m.mentionsCount = 0;
+            m.messageCount = 0;
             m.manuallyUnread = false;
             if (!onlyCounts) {
                 m.viewedAt = member.lastViewedAt;

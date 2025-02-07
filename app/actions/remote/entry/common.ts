@@ -3,6 +3,7 @@
 
 import {fetchMissingDirectChannelsInfo, fetchMyChannelsForTeam, handleKickFromChannel, type MyChannelsRequest} from '@actions/remote/channel';
 import {fetchGroupsForMember} from '@actions/remote/groups';
+import {fetchTechnicalChannels} from '@actions/remote/issue';
 import {fetchPostsForUnreadChannels} from '@actions/remote/post';
 import {type MyPreferencesRequest, fetchMyPreferences} from '@actions/remote/preference';
 import {fetchRoles} from '@actions/remote/role';
@@ -411,6 +412,8 @@ async function restDeferredAppEntryActions(
             fetchMissingDirectChannelsInfo(serverUrl, Array.from(channelsToFetchProfiles), currentUserLocale, teammateDisplayNameSetting, currentUserId);
         }
     }, FETCH_MISSING_DM_TIMEOUT);
+
+    fetchTechnicalChannels(serverUrl);
 }
 
 export const registerDeviceToken = async (serverUrl: string) => {

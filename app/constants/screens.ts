@@ -11,13 +11,19 @@ export const CALL_PARTICIPANTS = 'CallParticipants';
 export const CALL_HOST_CONTROLS = 'CallHostControls';
 export const CHANNEL = 'Channel';
 export const CHANNEL_ADD_MEMBERS = 'ChannelAddMembers';
+export const CHANNEL_COMPLETED = 'ChannelCompleted';
 export const CHANNEL_FILES = 'ChannelFiles';
 export const CHANNEL_INFO = 'ChannelInfo';
 export const CHANNEL_NOTIFICATION_PREFERENCES = 'ChannelNotificationPreferences';
 export const CODE = 'Code';
+export const CONTACTS = 'Contacts';
 export const CONVERT_GM_TO_CHANNEL = 'ConvertGMToChannel';
 export const CREATE_DIRECT_MESSAGE = 'CreateDirectMessage';
+export const CREATE_ISSUE = 'CreateIssue';
 export const CREATE_OR_EDIT_CHANNEL = 'CreateOrEditChannel';
+export const CREATE_PLAN = 'CreatePlan';
+export const CREATE_POST = 'CreatePost';
+export const CREATE_TASK = 'CreateTask';
 export const CREATE_TEAM = 'CreateTeam';
 export const CUSTOM_STATUS = 'CustomStatus';
 export const CUSTOM_STATUS_CLEAR_AFTER = 'CustomStatusClearAfter';
@@ -34,18 +40,24 @@ export const INTEGRATION_SELECTOR = 'IntegrationSelector';
 export const INTERACTIVE_DIALOG = 'InteractiveDialog';
 export const INVITE = 'Invite';
 export const IN_APP_NOTIFICATION = 'InAppNotification';
+export const ISSUE = 'Issue';
+export const ISSUES = 'Issues';
 export const JOIN_TEAM = 'JoinTeam';
 export const LATEX = 'Latex';
 export const LOGIN = 'Login';
 export const MANAGE_CHANNEL_MEMBERS = 'ManageChannelMembers';
 export const MENTIONS = 'Mentions';
 export const MFA = 'MFA';
+export const NEWS = 'News';
 export const ONBOARDING = 'Onboarding';
 export const PERMALINK = 'Permalink';
 export const PINNED_MESSAGES = 'PinnedMessages';
+export const PLAN = 'Plan';
+export const PLANS = 'Plans';
 export const POST_OPTIONS = 'PostOptions';
 export const POST_PRIORITY_PICKER = 'PostPriorityPicker';
 export const REACTIONS = 'Reactions';
+export const RECURRING_TASKS = 'RecurringTaskS';
 export const REVIEW_APP = 'ReviewApp';
 export const SAVED_MESSAGES = 'SavedMessages';
 export const SEARCH = 'Search';
@@ -69,7 +81,10 @@ export const SHARE_FEEDBACK = 'ShareFeedback';
 export const SNACK_BAR = 'SnackBar';
 export const SSO = 'SSO';
 export const TABLE = 'Table';
+export const TASK = 'Task';
+export const TASKS = 'Tasks';
 export const TEAM_SELECTOR_LIST = 'TeamSelectorList';
+export const TECHNICAL_TASKS = 'TechnicalTasks';
 export const TERMS_OF_SERVICE = 'TermsOfService';
 export const THREAD = 'Thread';
 export const THREAD_FOLLOW_BUTTON = 'ThreadFollowButton';
@@ -90,13 +105,19 @@ export default {
     CHANNEL,
     CHANNEL_ADD_MEMBERS,
     CHANNEL_BOOKMARK,
+    CHANNEL_COMPLETED,
     CHANNEL_FILES,
     CHANNEL_INFO,
     CHANNEL_NOTIFICATION_PREFERENCES,
     CODE,
+    CONTACTS,
     CONVERT_GM_TO_CHANNEL,
     CREATE_DIRECT_MESSAGE,
+    CREATE_ISSUE,
     CREATE_OR_EDIT_CHANNEL,
+    CREATE_PLAN,
+    CREATE_POST,
+    CREATE_TASK,
     CREATE_TEAM,
     CUSTOM_STATUS,
     CUSTOM_STATUS_CLEAR_AFTER,
@@ -113,18 +134,24 @@ export default {
     INTERACTIVE_DIALOG,
     INVITE,
     IN_APP_NOTIFICATION,
+    ISSUE,
+    ISSUES,
     JOIN_TEAM,
     LATEX,
     LOGIN,
     MANAGE_CHANNEL_MEMBERS,
     MENTIONS,
     MFA,
+    NEWS,
     ONBOARDING,
     PERMALINK,
     PINNED_MESSAGES,
+    PLAN,
+    PLANS,
     POST_OPTIONS,
     POST_PRIORITY_PICKER,
     REACTIONS,
+    RECURRING_TASKS,
     REVIEW_APP,
     SAVED_MESSAGES,
     SEARCH,
@@ -148,7 +175,10 @@ export default {
     SNACK_BAR,
     SSO,
     TABLE,
+    TASK,
+    TASKS,
     TEAM_SELECTOR_LIST,
+    TECHNICAL_TASKS,
     TERMS_OF_SERVICE,
     THREAD,
     THREAD_FOLLOW_BUTTON,

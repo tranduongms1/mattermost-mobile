@@ -80,7 +80,7 @@ const ChannelListScreen = (props: ChannelProps) => {
     const insets = useSafeAreaInsets();
     const serverUrl = useServerUrl();
     const params = route.params as {direction: string};
-    const canAddOtherServers = managedConfig?.allowOtherServers !== 'false';
+    const canAddOtherServers = managedConfig?.allowOtherServers === 'true';
 
     const handleBackPress = useCallback(() => {
         const isHomeScreen = NavigationStore.getVisibleScreen() === Screens.HOME;
@@ -191,14 +191,16 @@ const ChannelListScreen = (props: ChannelProps) => {
                     <Animated.View
                         style={[styles.content, animated]}
                     >
+                        {false &&
                         <TeamSidebar
                             iconPad={canAddOtherServers}
                             hasMoreThanOneTeam={props.hasMoreThanOneTeam}
                         />
+                        }
                         <CategoriesList
                             iconPad={canAddOtherServers && !props.hasMoreThanOneTeam}
                             isCRTEnabled={props.isCRTEnabled}
-                            moreThanOneTeam={props.hasMoreThanOneTeam}
+                            moreThanOneTeam={false && props.hasMoreThanOneTeam}
                             hasChannels={props.hasChannels}
                         />
                         {isTablet &&

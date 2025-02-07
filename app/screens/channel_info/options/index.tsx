@@ -15,6 +15,7 @@ import IgnoreMentions from './ignore_mentions';
 import Members from './members';
 import NotificationPreference from './notification_preference';
 import PinnedMessages from './pinned_messages';
+import RenameChannel from './rename_channel';
 
 type Props = {
     channelId: string;
@@ -59,6 +60,9 @@ const Options = ({
                     channelId={channelId}
                     testID='channel_info.options.copy_channel_link.option'
                 />
+            }
+            {canManageMembers && type === General.GM_CHANNEL &&
+                <RenameChannel channelId={channelId}/>
             }
             {canManageSettings &&
                 <EditChannel channelId={channelId}/>

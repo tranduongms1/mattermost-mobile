@@ -5,6 +5,8 @@ import {withDatabase, withObservables} from '@nozbe/watermelondb/react';
 import {of as of$, from as from$} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 
+import {General} from '@constants';
+import {observeChannel} from '@queries/servers/channel';
 import {queryFilesForPost} from '@queries/servers/file';
 import {observeCanDownloadFiles, observeConfigBooleanValue} from '@queries/servers/system';
 import {fileExists} from '@utils/file';
@@ -36,6 +38,10 @@ const filesLocalPathValidation = async (files: FileModel[], authorId: string) =>
 };
 
 const enhance = withObservables(['post'], ({database, post}: EnhanceProps) => {
+    const fullWidth = observeChannel(database, post.channelId).pipe(
+        switchMap((c) => of$(c?.name === General.DEFAULT_CHANNEL)),
+    );
+
     const publicLinkEnabled = observeConfigBooleanValue(database, 'EnablePublicLink');
 
     const filesInfo = queryFilesForPost(database, post.id).observeWithColumns(['local_path']).pipe(
@@ -48,6 +54,7 @@ const enhance = withObservables(['post'], ({database, post}: EnhanceProps) => {
         postProps: of$(post.props),
         publicLinkEnabled,
         filesInfo,
+        fullWidth,
     };
 });
 

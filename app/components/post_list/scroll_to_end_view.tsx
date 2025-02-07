@@ -116,7 +116,7 @@ const ScrollToEndView = ({
                 >
                     <CompassIcon
                         size={18}
-                        name='arrow-down'
+                        name={location === Screens.NEWS ? 'arrow-up' : 'arrow-down'}
                         color={isNewMessage ? theme.buttonColor : changeOpacity(theme.centerChannelColor, 0.56)}
                     />
                     {isNewMessage && (

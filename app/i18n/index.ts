@@ -10,7 +10,7 @@ import {logError} from '@utils/log';
 
 import availableLanguages from './languages';
 
-const deviceLocale = getLocales()[0].languageTag;
+const deviceLocale = 'vi' || getLocales()[0].languageTag;
 const PRIMARY_LOCALE = 'en';
 export const DEFAULT_LOCALE = getLocaleFromLanguage(deviceLocale);
 

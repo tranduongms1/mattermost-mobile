@@ -113,6 +113,7 @@ const PostList = ({
     const [lastPostId, setLastPostId] = useState<string | undefined>(posts[0]?.id);
     const theme = useTheme();
     const serverUrl = useServerUrl();
+    const isNews = location === Screens.NEWS;
     const orderedPosts = useMemo(() => {
         return preparePostList(posts, lastViewedAt, showNewMessageLine, currentUserId, currentUsername, shouldShowJoinLeaveMessages, currentTimezone, location === Screens.THREAD, savedPostIds);
     }, [posts, lastViewedAt, showNewMessageLine, currentTimezone, currentUsername, shouldShowJoinLeaveMessages, location, savedPostIds]);
@@ -242,6 +243,9 @@ const PostList = ({
                     />
                 );
             case 'date':
+                if (isNews) {
+                    return null;
+                }
                 return (
                     <DateSeparator
                         key={item.value}
@@ -358,7 +362,7 @@ const PostList = ({
                 style={styles.flex}
                 viewabilityConfig={VIEWABILITY_CONFIG}
                 testID={`${testID}.flat_list`}
-                inverted={true}
+                inverted={!isNews}
                 refreshing={refreshing}
                 onRefresh={onRefresh}
             />

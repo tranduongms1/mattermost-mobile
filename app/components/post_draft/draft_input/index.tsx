@@ -233,6 +233,7 @@ export default function DraftInput({
                             postPriority={postPriority}
                             updatePostPriority={updatePostPriority}
                             canShowPostPriority={canShowPostPriority}
+                            channelType={channelType}
                             focus={focus}
                         />
                         <SendAction

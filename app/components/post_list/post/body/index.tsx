@@ -10,24 +10,30 @@ import JumboEmoji from '@components/jumbo_emoji';
 import {Screens} from '@constants';
 import {THREAD} from '@constants/screens';
 import {isEdited as postEdited, isPostFailed} from '@utils/post';
-import {makeStyleSheetFromTheme} from '@utils/theme';
+import {changeOpacity, makeStyleSheetFromTheme} from '@utils/theme';
 
 import Acknowledgements from './acknowledgements';
 import AddMembers from './add_members';
 import Content from './content';
 import Failed from './failed';
+import Issue from './issue';
+import IssueUpdated from './issue_updated';
 import Message from './message';
+import Plan from './plan';
 import Reactions from './reactions';
+import Task from './task';
 
 import type PostModel from '@typings/database/models/servers/post';
 import type {SearchPattern} from '@typings/global/markdown';
 
 type BodyProps = {
     appsEnabled: boolean;
+    fromMe: boolean;
     hasFiles: boolean;
     hasReactions: boolean;
     highlight: boolean;
     highlightReplyBar: boolean;
+    isArticle?: boolean;
     isCRTEnabled?: boolean;
     isEphemeral: boolean;
     isFirstReply?: boolean;
@@ -50,13 +56,29 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
             flexDirection: 'row',
             flexWrap: 'wrap',
             alignContent: 'flex-start',
-            marginTop: 12,
+            marginLeft: 8,
+            marginTop: -4,
+        },
+        me: {
+            alignSelf: 'flex-end',
+            backgroundColor: changeOpacity('#009AF9', 0.16),
         },
         messageBody: {
             paddingVertical: 2,
             flex: 1,
         },
-        messageContainer: {width: '100%'},
+        messageContainer: {
+            alignSelf: 'flex-start',
+            backgroundColor: changeOpacity(theme.centerChannelColor, 0.08),
+            borderRadius: 12,
+            flexDirection: 'row',
+            maxWidth: '100%',
+            padding: 14,
+        },
+        reply: {
+            borderColor: changeOpacity(theme.linkColor, 0.6),
+            borderWidth: 1,
+        },
         replyBar: {
             backgroundColor: theme.centerChannelColor,
             opacity: 0.1,
@@ -80,17 +102,19 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
             flexDirection: 'row',
             width: '100%',
         },
+        reverse: {flexDirection: 'row-reverse'},
     };
 });
 
 const Body = ({
-    appsEnabled, hasFiles, hasReactions, highlight, highlightReplyBar,
-    isCRTEnabled, isEphemeral, isFirstReply, isJumboEmoji, isLastReply, isPendingOrFailed, isPostAcknowledgementEnabled, isPostAddChannelMember,
+    appsEnabled, fromMe, hasFiles, hasReactions, highlight, highlightReplyBar,
+    isArticle, isCRTEnabled, isEphemeral, isFirstReply, isJumboEmoji, isLastReply, isPendingOrFailed, isPostAcknowledgementEnabled, isPostAddChannelMember,
     location, post, searchPatterns, showAddReaction, theme,
 }: BodyProps) => {
     const style = getStyleSheet(theme);
     const isEdited = postEdited(post);
     const isFailed = isPostFailed(post);
+    const reverse = !isArticle && fromMe;
     const [layoutWidth, setLayoutWidth] = useState(0);
     const hasBeenDeleted = Boolean(post.deleteAt);
     let body;
@@ -118,11 +142,11 @@ const Body = ({
             barStyle.push(style.replyMention);
         }
 
-        return barStyle;
+        return undefined;
     }, []);
 
     const onLayout = useCallback((e: LayoutChangeEvent) => {
-        if (location === Screens.SAVED_MESSAGES) {
+        if (isArticle || location === Screens.SAVED_MESSAGES) {
             setLayoutWidth(e.nativeEvent.layout.width);
         }
     }, [location]);
@@ -135,25 +159,17 @@ const Body = ({
                 defaultMessage='(message deleted)'
             />
         );
-    } else if (isPostAddChannelMember) {
+    } else if (post.type === 'custom_issue') {
         message = (
-            <AddMembers
+            <Issue
                 location={location}
                 post={post}
                 theme={theme}
             />
         );
-    } else if (isJumboEmoji) {
+    } else if (post.type === 'custom_issue_updated') {
         message = (
-            <JumboEmoji
-                baseTextStyle={style.message}
-                isEdited={isEdited}
-                value={post.message}
-            />
-        );
-    } else if (post.message.length) {
-        message = (
-            <Message
+            <IssueUpdated
                 highlight={highlight}
                 isEdited={isEdited}
                 isPendingOrFailed={isPendingOrFailed}
@@ -164,6 +180,56 @@ const Body = ({
                 searchPatterns={searchPatterns}
                 theme={theme}
             />
+        );
+    } else if (post.type === 'custom_plan') {
+        message = (
+            <Plan
+                location={location}
+                post={post}
+                theme={theme}
+            />
+        );
+    } else if (post.type === 'custom_task') {
+        message = (
+            <Task
+                location={location}
+                post={post}
+                theme={theme}
+            />
+        );
+    } else if (isPostAddChannelMember) {
+        message = (
+            <AddMembers
+                location={location}
+                post={post}
+                theme={theme}
+            />
+        );
+    } else if (isJumboEmoji) {
+        message = (
+            <View style={fromMe && {alignSelf: 'flex-end'}}>
+                <JumboEmoji
+                    baseTextStyle={style.message}
+                    isEdited={isEdited}
+                    value={post.message}
+                />
+            </View>
+        );
+    } else if (post.message.length) {
+        message = (
+            <View style={isArticle ? {paddingVertical: 4} : [style.messageContainer, fromMe && style.me, isReplyPost && style.reply]}>
+                <Message
+                    highlight={highlight}
+                    isEdited={isEdited}
+                    isPendingOrFailed={isPendingOrFailed}
+                    isReplyPost={isReplyPost}
+                    layoutWidth={layoutWidth}
+                    location={location}
+                    post={post}
+                    searchPatterns={searchPatterns}
+                    theme={theme}
+                />
+            </View>
         );
     }
 
@@ -189,10 +255,11 @@ const Body = ({
                     location={location}
                     post={post}
                     isReplyPost={isReplyPost}
+                    reverse={reverse}
                 />
                 }
                 {(acknowledgementsVisible || reactionsVisible) && (
-                    <View style={style.ackAndReactionsContainer}>
+                    <View style={[style.ackAndReactionsContainer, reverse && style.reverse]}>
                         {acknowledgementsVisible && (
                             <Acknowledgements
                                 hasReactions={hasReactions}
@@ -216,7 +283,7 @@ const Body = ({
 
     return (
         <View
-            style={style.messageContainerWithReplyBar}
+            style={[style.messageContainerWithReplyBar, reverse && style.reverse]}
             onLayout={onLayout}
         >
             <View style={replyBarStyle()}/>

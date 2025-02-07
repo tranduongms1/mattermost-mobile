@@ -14,7 +14,7 @@ import {debounce} from '@helpers/api/general';
 import NetworkManager from '@managers/network_manager';
 import {getMembersCountByChannelsId, queryChannelsByTypes} from '@queries/servers/channel';
 import {queryGroupsByNames} from '@queries/servers/group';
-import {getCurrentUserId, setCurrentUserId} from '@queries/servers/system';
+import {getCurrentTeamId, getCurrentUserId, setCurrentUserId} from '@queries/servers/system';
 import {getCurrentUser, prepareUsers, queryAllUsers, queryUsersById, queryUsersByIdsOrUsernames, queryUsersByUsername} from '@queries/servers/user';
 import {getFullErrorMessage} from '@utils/errors';
 import {logDebug} from '@utils/log';
@@ -560,7 +560,7 @@ export const fetchProfilesNotInChannel = async (
     try {
         const {operator, database} = DatabaseManager.getServerDatabaseAndOperator(serverUrl);
         const client = NetworkManager.getClient(serverUrl);
-        const users = await client.getProfilesNotInChannel(teamId, channelId, groupConstrained, page, perPage);
+        const users = await client.getProfilesNotInChannel(teamId || await getCurrentTeamId(database), channelId, groupConstrained, page, perPage);
 
         if (!fetchOnly && users.length) {
             const currentUserId = await getCurrentUserId(database);

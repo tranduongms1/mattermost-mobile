@@ -4,6 +4,7 @@
 import React from 'react';
 import {View} from 'react-native';
 
+import FormattedDate from '@components/formatted_date';
 import FormattedTime from '@components/formatted_time';
 import PostPriorityLabel from '@components/post_priority/post_priority_label';
 import {CHANNEL, THREAD} from '@constants/screens';
@@ -27,6 +28,7 @@ type HeaderProps = {
     commentCount: number;
     currentUser?: UserModel;
     enablePostUsernameOverride: boolean;
+    isArticle?: boolean;
     isAutoResponse: boolean;
     isCRTEnabled?: boolean;
     isCustomStatusEnabled: boolean;
@@ -73,15 +75,14 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
 const Header = (props: HeaderProps) => {
     const {
         author, commentCount = 0, currentUser, enablePostUsernameOverride, isAutoResponse, isCRTEnabled, isCustomStatusEnabled,
-        isEphemeral, isMilitaryTime, isPendingOrFailed, isSystemPost, isWebHook,
+        isArticle, isEphemeral, isMilitaryTime, isPendingOrFailed, isSystemPost, isWebHook,
         location, post, rootPostAuthor, showPostPriority, shouldRenderReplyButton, teammateNameDisplay, hideGuestTags,
     } = props;
     const theme = useTheme();
     const style = getStyleSheet(theme);
     const pendingPostStyle = isPendingOrFailed ? style.pendingPost : undefined;
-    const isReplyPost = Boolean(post.rootId && !isEphemeral);
-    const showReply = !isReplyPost && (location !== THREAD) && (shouldRenderReplyButton && (!rootPostAuthor && commentCount > 0));
-    const displayName = postUserDisplayName(post, author, teammateNameDisplay, enablePostUsernameOverride);
+    const showReply = !isArticle && !isEphemeral && (location !== THREAD) && (shouldRenderReplyButton && (post.type || commentCount > 0));
+    const displayName = author && postUserDisplayName(post, author, teammateNameDisplay, enablePostUsernameOverride);
     const rootAuthorDisplayName = rootPostAuthor ? displayUsername(rootPostAuthor, currentUser?.locale, teammateNameDisplay, true) : undefined;
     const customStatus = getUserCustomStatus(author);
     const showCustomStatusEmoji = Boolean(
@@ -91,7 +92,7 @@ const Header = (props: HeaderProps) => {
 
     return (
         <>
-            <View style={[style.container, pendingPostStyle]}>
+            <View style={[style.container, pendingPostStyle, isArticle && {marginTop: 4}]}>
                 <View style={style.wrapper}>
                     <HeaderDisplayName
                         channelId={post.channelId}
@@ -107,13 +108,14 @@ const Header = (props: HeaderProps) => {
                         showCustomStatusEmoji={showCustomStatusEmoji}
                         customStatus={customStatus!}
                     />
-                    {(!isSystemPost || isAutoResponse) &&
+                    {false && (!isSystemPost || isAutoResponse) &&
                     <HeaderTag
                         isAutoResponder={isAutoResponse}
                         isAutomation={isWebHook || author?.isBot}
                         showGuestTag={author?.isGuest && !hideGuestTags}
                     />
                     }
+                    {!isArticle &&
                     <FormattedTime
                         timezone={getUserTimezone(currentUser)}
                         isMilitaryTime={isMilitaryTime}
@@ -121,6 +123,7 @@ const Header = (props: HeaderProps) => {
                         style={style.time}
                         testID='post_header.date_time'
                     />
+                    }
                     {showPostPriority && post.metadata?.priority?.priority && (
                         <View style={style.postPriority}>
                             <PostPriorityLabel
@@ -137,8 +140,15 @@ const Header = (props: HeaderProps) => {
                         />
                     }
                 </View>
+                {isArticle &&
+                <FormattedDate
+                    format='DD/MM/YY HH:mm'
+                    style={[style.time, {marginTop: 0}]}
+                    value={post.createAt}
+                />
+                }
             </View>
-            {Boolean(rootAuthorDisplayName) && location === CHANNEL &&
+            {false && Boolean(rootAuthorDisplayName) && location === CHANNEL &&
             <HeaderCommentedOn
                 locale={currentUser?.locale || DEFAULT_LOCALE}
                 name={rootAuthorDisplayName!}
