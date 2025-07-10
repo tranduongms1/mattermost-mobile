@@ -29,6 +29,7 @@ import {typography} from '@utils/typography';
 
 import ChannelHeaderBookmarks from './bookmarks';
 import QuickActions, {MARGIN, SEPARATOR_HEIGHT} from './quick_actions';
+import TechnicalActions from './technical_actions';
 
 import type {HeaderRightButton} from '@components/navigation_header/header';
 import type {AvailableScreens} from '@typings/screens/navigation';
@@ -45,6 +46,7 @@ type ChannelProps = {
     componentId?: AvailableScreens;
     displayName: string;
     isOwnDirectMessage: boolean;
+    isTechnical: boolean;
     memberCount?: number;
     searchTerm: string;
     teamId: string;
@@ -82,7 +84,7 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => ({
 
 const ChannelHeader = ({
     canAddBookmarks, channelId, channelType, componentId, customStatus, displayName, hasBookmarks,
-    isBookmarksEnabled, isCustomStatusEnabled, isCustomStatusExpired, isOwnDirectMessage, memberCount,
+    isBookmarksEnabled, isCustomStatusEnabled, isCustomStatusExpired, isOwnDirectMessage, isTechnical, memberCount,
     searchTerm, teamId, callsEnabledInChannel, groupCallsAllowed, isTabletView, shouldRenderBookmarks, shouldRenderChannelBanner,
 }: ChannelProps) => {
     const intl = useIntl();
@@ -263,6 +265,12 @@ const ChannelHeader = ({
             />
             <View style={contextStyle}>
                 <RoundedHeaderContext/>
+                {isTechnical &&
+                    <TechnicalActions
+                        channelId={channelId}
+                        displayName={displayName}
+                    />
+                }
             </View>
             {showBookmarkBar &&
             <ChannelHeaderBookmarks
