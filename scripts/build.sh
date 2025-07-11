@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 function execute() {
-    cd fastlane && NODE_ENV=production bundle exec fastlane $1 $2
+    cd fastlane && NODE_ENV=production bundle exec fastlane --env android.release $1 $2
 }
 
 function apk() {
@@ -53,7 +53,7 @@ function installGemsAndPodsM1() {
 
 function setup() {
     if [[ -z "$SKIP_SETUP" ]]; then
-        npm run clean || exit 1
+        ./scripts/clean.sh
         npm install --ignore-scripts || exit 1
         npx patch-package || exit 1
         node node_modules/\@sentry/cli/scripts/install.js || exit 1

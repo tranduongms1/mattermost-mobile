@@ -85,7 +85,7 @@ const EMAIL_FIELD = 'email';
 const NICKNAME_FIELD = 'nickname';
 const POSITION_FIELD = 'position';
 
-const profileKeys = [FIRST_NAME_FIELD, LAST_NAME_FIELD, USERNAME_FIELD, EMAIL_FIELD, NICKNAME_FIELD, POSITION_FIELD];
+const profileKeys = [LAST_NAME_FIELD, FIRST_NAME_FIELD, USERNAME_FIELD, EMAIL_FIELD, NICKNAME_FIELD, POSITION_FIELD];
 
 const ProfileForm = ({
     canSave, currentUser, isTablet,
@@ -320,7 +320,7 @@ const ProfileForm = ({
 
     return (
         <>
-            {hasDisabledFields && <DisabledFields isTablet={isTablet}/>}
+            {false && hasDisabledFields && <DisabledFields isTablet={isTablet}/>}
             {renderAllAttributes}
             <View style={styles.footer}/>
         </>

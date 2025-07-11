@@ -5,7 +5,7 @@ import React, {useCallback, useRef, useState} from 'react';
 import {useIntl} from 'react-intl';
 import {Keyboard, TouchableOpacity} from 'react-native';
 
-import {addReaction, removeReaction, toggleReaction} from '@actions/remote/reactions';
+import {addReaction} from '@actions/remote/reactions';
 import CompassIcon from '@components/compass_icon';
 import {Screens} from '@constants';
 import {MAX_ALLOWED_REACTIONS} from '@constants/emoji';
@@ -40,15 +40,17 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
         reaction: {
             alignItems: 'center',
             justifyContent: 'center',
-            borderRadius: 4,
-            backgroundColor: changeOpacity(theme.centerChannelColor, 0.08),
+            borderRadius: 12,
+            backgroundColor: theme.centerChannelBg,
             flexDirection: 'row',
-            height: 32,
-            marginBottom: 12,
-            marginRight: 6,
-            paddingVertical: 4,
-            paddingHorizontal: 6,
-            width: 36,
+            height: 24,
+            marginBottom: 4,
+            marginRight: 8,
+            width: 24,
+            elevation: 2,
+            shadowOpacity: 0.2,
+            shadowOffset: {width: 0, height: 4},
+            shadowRadius: 4,
         },
     };
 });
@@ -80,11 +82,7 @@ const Reactions = ({currentUserId, canAddReaction, canRemoveReaction, disabled, 
                 const emojiAlias = getEmojiFirstAlias(reaction.emojiName);
                 if (acc.has(emojiAlias)) {
                     const rs = acc.get(emojiAlias)!;
-                    // eslint-disable-next-line max-nested-callbacks
-                    const present = rs.findIndex((r) => r.userId === reaction.userId) > -1;
-                    if (!present) {
-                        rs.push(reaction);
-                    }
+                    rs.push(reaction);
                 } else {
                     acc.set(emojiAlias, [reaction]);
                 }
@@ -101,7 +99,7 @@ const Reactions = ({currentUserId, canAddReaction, canRemoveReaction, disabled, 
     }, [reactions, currentUserId]);
 
     const handleToggleReactionToPost = (emoji: string) => {
-        toggleReaction(serverUrl, postId, emoji);
+        addReaction(serverUrl, postId, emoji);
     };
 
     const handleAddReaction = useCallback(preventDoubleTap(() => {
@@ -114,11 +112,9 @@ const Reactions = ({currentUserId, canAddReaction, canRemoveReaction, disabled, 
         });
     }), [formatMessage, theme]);
 
-    const handleReactionPress = useCallback(async (emoji: string, remove: boolean) => {
+    const handleReactionPress = useCallback(async (emoji: string) => {
         pressed.current = true;
-        if (remove && canRemoveReaction && !disabled) {
-            await removeReaction(serverUrl, postId, emoji);
-        } else if (!remove && canAddReaction && !disabled) {
+        if (canAddReaction && !disabled) {
             await addReaction(serverUrl, postId, emoji);
         }
 
@@ -156,7 +152,7 @@ const Reactions = ({currentUserId, canAddReaction, canRemoveReaction, disabled, 
             >
                 <CompassIcon
                     name='emoticon-plus-outline'
-                    size={24}
+                    size={18}
                     style={styles.addReaction}
                 />
             </TouchableOpacity>

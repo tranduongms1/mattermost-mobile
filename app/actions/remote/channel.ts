@@ -611,7 +611,7 @@ export async function fetchMissingDirectChannelsInfo(
 
             directChannels.forEach((c) => {
                 const displayName = displayNameByChannel[c.id];
-                if (displayName) {
+                if (!c.display_name && displayName) {
                     c.display_name = displayName;
                     c.fake = true;
                     updatedChannels.add(c);
