@@ -26,8 +26,7 @@ import {notificationError} from '@utils/notification';
 
 import Account from './account';
 import ChannelList from './channel_list';
-import RecentMentions from './recent_mentions';
-import SavedMessages from './saved_messages';
+import Contacts from './contacts';
 import Search from './search';
 import TabBar from './tab_bar';
 
@@ -181,19 +180,14 @@ export function HomeScreen(props: HomeProps) {
                         {() => <ChannelList {...props}/>}
                     </Tab.Screen>
                     <Tab.Screen
+                        name={Screens.CONTACTS}
+                        component={Contacts}
+                        options={{tabBarButtonTestID: 'tab_bar.contacts.tab', freezeOnBlur: true, lazy: true}}
+                    />
+                    <Tab.Screen
                         name={Screens.SEARCH}
                         component={Search}
                         options={{tabBarButtonTestID: 'tab_bar.search.tab', freezeOnBlur: true, lazy: true}}
-                    />
-                    <Tab.Screen
-                        name={Screens.MENTIONS}
-                        component={RecentMentions}
-                        options={{tabBarButtonTestID: 'tab_bar.mentions.tab', freezeOnBlur: true, lazy: true}}
-                    />
-                    <Tab.Screen
-                        name={Screens.SAVED_MESSAGES}
-                        component={SavedMessages}
-                        options={{tabBarButtonTestID: 'tab_bar.saved_messages.tab', freezeOnBlur: true, lazy: true}}
                     />
                     <Tab.Screen
                         name={Screens.ACCOUNT}

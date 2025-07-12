@@ -131,6 +131,7 @@ const Settings = ({componentId, helpLink, showHelp, siteName}: SettingsProps) =>
                 optionName='advanced_settings'
                 testID='settings.advanced_settings.option'
             />
+            {false &&
             <SettingItem
                 icon='information-outline'
                 label={intl.formatMessage({id: 'settings.about', defaultMessage: 'About {appTitle}'}, {appTitle: serverName})}
@@ -138,8 +139,9 @@ const Settings = ({componentId, helpLink, showHelp, siteName}: SettingsProps) =>
                 optionName='about'
                 testID='settings.about.option'
             />
-            {Platform.OS === 'android' && <View style={styles.helpGroup}/>}
-            {showHelp &&
+            }
+            {false && Platform.OS === 'android' && <View style={styles.helpGroup}/>}
+            {false && showHelp &&
                 <SettingItem
                     optionLabelTextStyle={{color: theme.linkColor}}
                     onPress={openHelp}
@@ -149,7 +151,7 @@ const Settings = ({componentId, helpLink, showHelp, siteName}: SettingsProps) =>
                     type='default'
                 />
             }
-            <ReportProblem/>
+            {false && <ReportProblem/>}
         </SettingContainer>
     );
 };

@@ -59,7 +59,7 @@ const Categories = ({
             return ['UNREADS' as const];
         }
 
-        const orderedCategories = [...categories];
+        const orderedCategories = categories.filter((c) => c.type !== 'channels');
         orderedCategories.sort((a, b) => a.sortOrder - b.sortOrder);
 
         if (unreadsOnTop) {
@@ -89,7 +89,9 @@ const Categories = ({
         }
         return (
             <>
+                {categoriesToShow.length > 3 &&
                 <CategoryHeader category={data.item}/>
+                }
                 <CategoryBody
                     category={data.item}
                     isTablet={isTablet}
@@ -98,7 +100,7 @@ const Categories = ({
                 />
             </>
         );
-    }, [teamId, intl.locale, isTablet, onChannelSwitch, showOnlyUnreadsCategory]);
+    }, [teamId, intl.locale, isTablet, onChannelSwitch, showOnlyUnreadsCategory, categoriesToShow]);
 
     useEffect(() => {
         const t = setTimeout(() => {
@@ -138,6 +140,7 @@ const Categories = ({
                     ref={listRef}
                     renderItem={renderCategory}
                     style={styles.mainList}
+                    contentContainerStyle={{paddingBottom: 64}}
                     showsHorizontalScrollIndicator={false}
                     showsVerticalScrollIndicator={false}
                     keyExtractor={extractKey}
