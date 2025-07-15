@@ -37,9 +37,6 @@ type Props = {
     customFields?: CustomProfileFieldModel[];
 }
 
-const includesSsoService = (sso: string) => ['gitlab', 'google', 'office365'].includes(sso);
-const isSAMLOrLDAP = (protocol: string) => ['ldap', 'saml'].includes(protocol);
-
 const FIELDS: { [id: string]: MessageDescriptor } = {
     firstName: {
         id: t('user.settings.general.firstName'),
@@ -122,23 +119,22 @@ const ProfileForm = ({
     }, [customFields]);
 
     const userProfileFields: FieldSequence = useMemo(() => {
-        const service = currentUser.authService;
         const fields: FieldSequence = {};
         formKeys.forEach((element) => {
             switch (element) {
                 case FIRST_NAME_FIELD:
                     fields[FIRST_NAME_FIELD] = {
-                        isDisabled: (isSAMLOrLDAP(service) && lockedFirstName) || includesSsoService(service),
+                        isDisabled: true,
                     };
                     break;
                 case LAST_NAME_FIELD:
                     fields[LAST_NAME_FIELD] = {
-                        isDisabled: (isSAMLOrLDAP(service) && lockedLastName) || includesSsoService(service),
+                        isDisabled: true,
                     };
                     break;
                 case USERNAME_FIELD:
                     fields[USERNAME_FIELD] = {
-                        isDisabled: service !== '',
+                        isDisabled: true,
                         maxLength: 22,
                         error: errorMessage,
                     };
@@ -150,13 +146,13 @@ const ProfileForm = ({
                     break;
                 case NICKNAME_FIELD:
                     fields[NICKNAME_FIELD] = {
-                        isDisabled: isSAMLOrLDAP(service) && lockedNickname,
+                        isDisabled: true,
                         maxLength: 64,
                     };
                     break;
                 case POSITION_FIELD:
                     fields[POSITION_FIELD] = {
-                        isDisabled: isSAMLOrLDAP(service) && lockedPosition,
+                        isDisabled: true,
                         maxLength: 128,
                     };
                     break;

@@ -8,13 +8,18 @@ import CameraAction from './camera_quick_action';
 import FileAction from './file_quick_action';
 import ImageAction from './image_quick_action';
 import InputAction from './input_quick_action';
+import IssueAction from './issue_action';
+import PlanAction from './plan_action';
 import PostPriorityAction from './post_priority_action';
+import TaskAction from './task_action';
+import TroubleAction from './trouble_action';
 
 type Props = {
     testID?: string;
     canUploadFiles: boolean;
     fileCount: number;
     isPostPriorityEnabled: boolean;
+    canCreatePlan?: boolean;
     canShowPostPriority?: boolean;
     canShowSlashCommands?: boolean;
     maxFileCount: number;
@@ -44,6 +49,7 @@ export default function QuickActions({
     value,
     fileCount,
     isPostPriorityEnabled,
+    canCreatePlan,
     canShowSlashCommands = true,
     canShowPostPriority,
     maxFileCount,
@@ -76,6 +82,7 @@ export default function QuickActions({
             testID={testID}
             style={style.quickActionsContainer}
         >
+            {false &&
             <InputAction
                 testID={atInputActionTestID}
                 disabled={atDisabled}
@@ -83,7 +90,8 @@ export default function QuickActions({
                 updateValue={updateValue}
                 focus={focus}
             />
-            {canShowSlashCommands && (
+            }
+            {false && canShowSlashCommands && (
                 <InputAction
                     testID={slashInputActionTestID}
                     disabled={slashDisabled}
@@ -104,13 +112,19 @@ export default function QuickActions({
                 testID={cameraActionTestID}
                 {...uploadProps}
             />
-            {isPostPriorityEnabled && canShowPostPriority && (
+            {false && isPostPriorityEnabled && canShowPostPriority && (
                 <PostPriorityAction
                     testID={postPriorityActionTestID}
                     postPriority={postPriority}
                     updatePostPriority={updatePostPriority}
                 />
             )}
+            <TroubleAction/>
+            <IssueAction/>
+            {canCreatePlan &&
+                <PlanAction/>
+            }
+            <TaskAction/>
         </View>
     );
 }
