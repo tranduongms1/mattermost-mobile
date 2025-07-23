@@ -62,6 +62,7 @@ const DraftScheduledPostOptions: React.FC<Props> = ({
         const componentHeight = TITLE_HEIGHT + bottomSheetSnapPoint(4, ITEM_HEIGHT);
         return [1, componentHeight];
     }, []);
+    const isCustom = ['trouble', 'issue', 'plan', 'task'].includes(rootId);
 
     const renderContent = () => {
         return (
@@ -81,19 +82,22 @@ const DraftScheduledPostOptions: React.FC<Props> = ({
                         />
                     )
                 )}
+                {!isCustom &&
                 <CopyTextOption
                     bottomSheetId={Screens.DRAFT_SCHEDULED_POST_OPTIONS}
                     postMessage={draft.message}
                     sourceScreen={Screens.DRAFT_SCHEDULED_POST_OPTIONS}
                     key={draft.id}
                 />
-                {draftType === DRAFT_TYPE_DRAFT &&
+                }
+                {!isCustom && draftType === DRAFT_TYPE_DRAFT &&
                     <EditDraft
                         bottomSheetId={Screens.DRAFT_SCHEDULED_POST_OPTIONS}
                         channel={channel}
                         rootId={rootId}
                     />
                 }
+                {!isCustom &&
                 <SendHandler
                     bottomSheetId={Screens.DRAFT_SCHEDULED_POST_OPTIONS}
                     channelId={channel.id}
@@ -113,6 +117,7 @@ const DraftScheduledPostOptions: React.FC<Props> = ({
                     setIsFocused={emptyFunction}
                     updateValue={emptyFunction}
                 />
+                }
                 {draftType === DRAFT_TYPE_SCHEDULED &&
                     <RescheduledDraft
                         bottomSheetId={Screens.DRAFT_SCHEDULED_POST_OPTIONS}

@@ -192,6 +192,7 @@ function DraftInput({
         });
     }, [handleSendMessage, intl, isTablet, scheduledPostsEnabled, theme]);
 
+    const canCreatePlan = channelType === 'G' && channelName?.endsWith('ky-thuat');
     const sendActionDisabled = !canSend || noMentionsError;
 
     return (
@@ -252,6 +253,7 @@ function DraftInput({
                             value={value}
                             postPriority={postPriority}
                             updatePostPriority={updatePostPriority}
+                            canCreatePlan={canCreatePlan}
                             canShowPostPriority={canShowPostPriority}
                             focus={focus}
                         />

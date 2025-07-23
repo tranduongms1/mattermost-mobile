@@ -63,7 +63,7 @@ const Files = ({
     reverse,
 }: FilesProps) => {
     const galleryIdentifier = `${postId}-fileAttachments-${location}`;
-    const [inViewPort, setInViewPort] = useState(false);
+    const [inViewPort, setInViewPort] = useState(location === 'InView');
     const isTablet = useIsTablet();
 
     const {images: imageAttachments, nonImages: nonImageAttachments} = useImageAttachments(filesInfo);
