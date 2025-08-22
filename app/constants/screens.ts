@@ -17,6 +17,7 @@ export const CHANNEL_FILES = 'ChannelFiles';
 export const CHANNEL_INFO = 'ChannelInfo';
 export const CHANNEL_NOTIFICATION_PREFERENCES = 'ChannelNotificationPreferences';
 export const CODE = 'Code';
+export const CONTACTS = 'Contacts';
 export const CONVERT_GM_TO_CHANNEL = 'ConvertGMToChannel';
 export const CREATE_DIRECT_MESSAGE = 'CreateDirectMessage';
 export const CREATE_OR_EDIT_CHANNEL = 'CreateOrEditChannel';
@@ -105,6 +106,7 @@ export default {
     CHANNEL_INFO,
     CHANNEL_NOTIFICATION_PREFERENCES,
     CODE,
+    CONTACTS,
     CONVERT_GM_TO_CHANNEL,
     COMPONENT_LIBRARY,
     CREATE_DIRECT_MESSAGE,

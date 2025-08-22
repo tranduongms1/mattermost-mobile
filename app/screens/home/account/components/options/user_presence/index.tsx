@@ -157,7 +157,7 @@ const UserStatus = ({currentUser}: Props) => {
 
     return (
         <TouchableOpacity
-            onPress={handleSetStatus}
+            onPress={() => handleSetStatus}
             testID='account.user_presence.option'
         >
             <View style={styles.body}>

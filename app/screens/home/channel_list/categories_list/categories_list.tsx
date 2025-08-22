@@ -15,6 +15,7 @@ import {useIsTablet} from '@hooks/device';
 import {makeStyleSheetFromTheme} from '@utils/theme';
 
 import Categories from './categories';
+import DefaultChannel from './default_channel';
 import ChannelListHeader from './header';
 import LoadChannelsError from './load_channels_error';
 import SubHeader from './subheader';
@@ -134,6 +135,7 @@ const CategoriesList = ({
                 <SubHeader/>
                 {threadButtonComponent}
                 {draftsButtonComponent}
+                <DefaultChannel/>
                 <Categories/>
             </>
         );

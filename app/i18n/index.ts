@@ -12,7 +12,7 @@ import availableLanguages from './languages';
 
 const PRIMARY_LOCALE = 'en';
 const deviceLocale = getLocales()[0]?.languageTag || PRIMARY_LOCALE;
-export const DEFAULT_LOCALE = getLocaleFromLanguage(deviceLocale);
+export const DEFAULT_LOCALE = getLocaleFromLanguage(deviceLocale && 'vi');
 
 function loadTranslation(locale?: string): {[x: string]: string} {
     try {

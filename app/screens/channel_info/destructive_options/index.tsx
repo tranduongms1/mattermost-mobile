@@ -4,6 +4,7 @@
 import React from 'react';
 
 import LeaveChannelLabel from '@components/channel_actions/leave_channel_label';
+import LeaveGroupLabel from '@components/channel_actions/leave_channel_label/leave_channel_label';
 import {General} from '@constants';
 
 import Archive from './archive';
@@ -28,6 +29,15 @@ const DestructiveOptions = ({channelId, componentId, type}: Props) => {
                 isOptionItem={true}
                 testID='channel_info.options.leave_channel.option'
             />
+            {type === General.GM_CHANNEL &&
+                <LeaveGroupLabel
+                    canLeave={true}
+                    channelId={channelId}
+                    displayName='này'
+                    isOptionItem={true}
+                    type={General.PRIVATE_CHANNEL}
+                />
+            }
             {type !== General.DM_CHANNEL && type !== General.GM_CHANNEL &&
             <Archive
                 channelId={channelId}

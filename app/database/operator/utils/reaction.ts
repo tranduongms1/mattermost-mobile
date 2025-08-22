@@ -31,13 +31,13 @@ export const sanitizeReactions = async ({database, post_id, rawReactions, skipSy
     const createReactions: Array<RecordPair<ReactionModel, Reaction>> = [];
 
     const reactionsMap = reactions.reduce((result: Record<string, ReactionModel>, reaction) => {
-        result[`${reaction.userId}-${reaction.emojiName}`] = reaction;
+        result[`${reaction.userId}-${reaction.emojiName}-${reaction.createAt}`] = reaction;
         return result;
     }, {});
 
     for (const raw of rawReactions) {
         // If the reaction is not present let's add it to the db
-        const exists = reactionsMap[`${raw.user_id}-${raw.emoji_name}`];
+        const exists = reactionsMap[`${raw.user_id}-${raw.emoji_name}-${raw.create_at}`];
 
         if (exists) {
             similarObjects.add(exists);

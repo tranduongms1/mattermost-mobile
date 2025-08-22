@@ -211,7 +211,7 @@ const CreateOrEditChannel = ({
 
         const patchChannel: ChannelPatch = {
             header,
-            ...!isDirect(channel) && {
+            ...(channel?.type !== General.DM_CHANNEL) && {
                 display_name: displayName,
                 purpose,
             },
