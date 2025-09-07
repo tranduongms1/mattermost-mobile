@@ -13,6 +13,7 @@ import NavigationStore from '@store/navigation_store';
 import {changeOpacity, makeStyleSheetFromTheme} from '@utils/theme';
 
 import Account from './account';
+import Contacts from './contacts';
 import Home from './home';
 import Mentions from './mentions';
 import SavedMessages from './saved_messages';
@@ -39,15 +40,15 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => ({
     },
     slider: {
         backgroundColor: theme.buttonBg,
-        borderBottomLeftRadius: 4,
-        borderBottomRightRadius: 4,
+        borderTopLeftRadius: 4,
+        borderTopRightRadius: 4,
         width: 48,
         height: 4,
     },
     sliderContainer: {
         height: 4,
         position: 'absolute',
-        top: 0,
+        bottom: 0,
         left: 10,
         alignItems: 'center',
     },
@@ -61,6 +62,7 @@ const shadowOffset: [x: number | string, y: number | string] = [0, -0.5];
 
 const TabComponents: Record<string, any> = {
     Account,
+    Contacts,
     Home,
     Mentions,
     SavedMessages,

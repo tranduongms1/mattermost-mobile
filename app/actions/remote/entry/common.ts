@@ -102,6 +102,7 @@ export async function deferredAppEntryActions(
 
 const entryRest = async (serverUrl: string, teamId?: string, channelId?: string, since = 0, groupLabel?: RequestGroupLabel) => {
     try {
+        const client = NetworkManager.getClient(serverUrl);
         const {database, operator} = DatabaseManager.getServerDatabaseAndOperator(serverUrl);
         let lastDisconnectedAt = since || await getLastFullSync(database);
 
@@ -137,6 +138,18 @@ const entryRest = async (serverUrl: string, teamId?: string, channelId?: string,
         const error = confResp.error || prefData.error || teamData.error || meData.error || chData.error;
         if (error) {
             return {error};
+        }
+        if (teamData.teams && chData.categories) {
+            const categoriesPromises = [];
+            for (const team of teamData.teams) {
+                if (!chData.categories.some((c) => c.team_id === team.id)) {
+                    categoriesPromises.push(client.getCategories('me', team.id, groupLabel));
+                }
+            }
+            const results = await Promise.all(categoriesPromises);
+            for (const result of results) {
+                chData.categories.push(...result.categories);
+            }
         }
 
         fetchRoles(serverUrl, teamData.memberships, chData.memberships, meData.user, false, false, groupLabel);
@@ -240,7 +253,7 @@ export async function entryInitialChannelId(database: Database, requestedChannel
         c.type === General.OPEN_CHANNEL &&
         membershipIds.has(c.id),
     ).sort(sortChannelsByDisplayName.bind(null, locale))[0];
-    return myFirstTeamChannel?.id || '';
+    return myFirstTeamChannel?.id || channels?.filter((c) => c.type === General.GM_CHANNEL && membershipIds.has(c.id))[0]?.id || '';
 }
 
 export async function restDeferredAppEntryActions(

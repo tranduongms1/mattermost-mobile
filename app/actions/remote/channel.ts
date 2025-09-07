@@ -275,7 +275,7 @@ export async function patchChannel(serverUrl: string, channelId: string, channel
         if (channel && (channel.displayName !== channelData.display_name || channel.type !== channelData.type)) {
             channel.prepareUpdate((v) => {
                 // DM and GM display names cannot be patched and are formatted client-side; do not overwrite
-                if (channelData.type !== General.DM_CHANNEL && channelData.type !== General.GM_CHANNEL) {
+                if (channelData.type !== General.DM_CHANNEL) {
                     v.displayName = channelData.display_name;
                 }
                 v.type = channelData.type;
@@ -611,7 +611,7 @@ export async function fetchMissingDirectChannelsInfo(
 
             directChannels.forEach((c) => {
                 const displayName = displayNameByChannel[c.id];
-                if (displayName) {
+                if (!c.display_name && displayName) {
                     c.display_name = displayName;
                     c.fake = true;
                     updatedChannels.add(c);

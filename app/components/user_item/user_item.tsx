@@ -179,7 +179,7 @@ const UserItem = ({
                             testID={`${userItemTestId}.display_name`}
                         >
                             {nonBreakingString(displayName)}
-                            {Boolean(showTeammateDisplay) && Boolean(user?.username) && (
+                            {false && Boolean(showTeammateDisplay) && Boolean(user?.username) && (
                                 <Text
                                     style={style.rowUsername}
                                     testID={`${userItemTestId}.username`}

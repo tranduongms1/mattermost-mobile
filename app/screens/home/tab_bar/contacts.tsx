@@ -13,16 +13,16 @@ type Props = {
     theme: Theme;
 }
 
-const Account = ({isFocused, theme}: Props) => {
+const Contacts = ({isFocused, theme}: Props) => {
     return (
         <View>
             <CompassIcon
                 size={BOTTOM_TAB_ICON_SIZE}
-                name='account-outline'
+                name='address-book-o'
                 color={isFocused ? theme.buttonBg : changeOpacity(theme.centerChannelColor, 0.48)}
             />
         </View>
     );
 };
 
-export default Account;
+export default Contacts;

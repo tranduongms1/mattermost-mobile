@@ -18,7 +18,7 @@ type ReactionProps = {
     theme: Theme;
 }
 
-const MIN_WIDTH = 50;
+const MIN_WIDTH = 36;
 const DIGIT_WIDTH = 5;
 
 const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
@@ -27,27 +27,31 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
             color: changeOpacity(theme.centerChannelColor, 0.56),
             ...typography('Body', 100, 'SemiBold'),
         },
-        countContainer: {marginRight: 8},
+        countContainer: {marginRight: 6},
         countHighlight: {
             color: theme.buttonBg,
         },
         customEmojiStyle: {color: '#000'},
-        emoji: {marginHorizontal: 5},
+        emoji: {marginLeft: 4, marginRight: 2},
         highlight: {
-            backgroundColor: changeOpacity(theme.buttonBg, 0.08),
             borderColor: theme.buttonBg,
             borderWidth: 1,
         },
         reaction: {
             alignItems: 'center',
-            borderRadius: 4,
-            backgroundColor: changeOpacity(theme.centerChannelColor, 0.08),
+            borderRadius: 12,
+            backgroundColor: theme.centerChannelBg,
             flexDirection: 'row',
-            height: 32,
+            height: 24,
             justifyContent: 'center',
-            marginBottom: 12,
+            marginBottom: 4,
             marginRight: 8,
             minWidth: MIN_WIDTH,
+            width: 24,
+            elevation: 2,
+            shadowOpacity: 0.2,
+            shadowOffset: {width: 0, height: 4},
+            shadowRadius: 4,
         },
     };
 });
@@ -80,7 +84,7 @@ const Reaction = ({count, emojiName, highlight, onPress, onLongPress, theme}: Re
             <View style={styles.emoji}>
                 <Emoji
                     emojiName={emojiName}
-                    size={20}
+                    size={14}
                     textStyle={styles.customEmojiStyle}
                     testID={`reaction.emoji.${emojiName}`}
                 />

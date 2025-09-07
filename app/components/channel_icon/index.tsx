@@ -11,8 +11,10 @@ import {changeOpacity, makeStyleSheetFromTheme} from '@utils/theme';
 import {typography} from '@utils/typography';
 
 import DmAvatar from './dm_avatar';
+import GmAvatar from './gm_avatar';
 
 type ChannelIconProps = {
+    channelId: string;
     hasDraft?: boolean;
     isActive?: boolean;
     isArchived?: boolean;
@@ -87,6 +89,7 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
 });
 
 const ChannelIcon = ({
+    channelId,
     hasDraft = false, isActive = false, isArchived = false,
     isOnCenterBg = false, isUnread = false, isMuted = false,
     membersCount = 0, name,
@@ -194,6 +197,14 @@ const ChannelIcon = ({
                     {left: 0.5},
                 ]}
                 testID={`${testID}.private`}
+            />
+        );
+    } else if (type === General.GM_CHANNEL && size >= 48) {
+        icon = (
+            <GmAvatar
+                channelId={channelId}
+                style={commonStyles}
+                size={size}
             />
         );
     } else if (type === General.GM_CHANNEL) {

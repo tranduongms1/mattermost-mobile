@@ -8,6 +8,8 @@ import {changeOpacity, makeStyleSheetFromTheme} from '@utils/theme';
 
 import CustomStatus from './custom_status';
 import Logout from './logout';
+import RecentMentions from './recent_mentions';
+import SavedMessages from './saved_messages';
 import Settings from './settings';
 import UserPresence from './user_presence';
 import YourProfile from './your_profile';
@@ -64,6 +66,8 @@ const AccountOptions = ({user, enableCustomUserStatuses, isTablet, theme}: Accou
             </View>
             <View style={styles.divider}/>
             <View style={styles.group}>
+                <SavedMessages/>
+                <RecentMentions/>
                 <YourProfile
                     isTablet={isTablet}
                     theme={theme}

@@ -174,6 +174,9 @@ Navigation.setLazyComponentRegistrator((screenName) => {
         case Screens.MANAGE_CHANNEL_MEMBERS:
             screen = withServerDatabase(require('@screens/manage_channel_members').default);
             break;
+        case Screens.MENTIONS:
+            screen = withServerDatabase(require('@screens/recent_mentions').default);
+            break;
         case Screens.MFA:
             screen = withIntl(require('@screens/mfa').default);
             break;
@@ -206,6 +209,9 @@ Navigation.setLazyComponentRegistrator((screenName) => {
             break;
         case Screens.REVIEW_APP:
             screen = withServerDatabase(require('@screens/review_app').default);
+            break;
+        case Screens.SAVED_MESSAGES:
+            screen = withServerDatabase(require('@screens/saved_messages').default);
             break;
         case Screens.SETTINGS:
             screen = withServerDatabase(require('@screens/settings').default);

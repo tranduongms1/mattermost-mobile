@@ -7,7 +7,6 @@ import Animated, {Easing, useAnimatedStyle, useSharedValue, withTiming} from 're
 
 import {fetchDirectChannelsInfo} from '@actions/remote/channel';
 import ChannelItem from '@components/channel_item';
-import {ROW_HEIGHT as CHANNEL_ROW_HEIGHT} from '@components/channel_item/channel_item';
 import {Events} from '@constants';
 import {DRAFT, THREAD} from '@constants/screens';
 import {useServerUrl} from '@context/server';
@@ -15,6 +14,8 @@ import {isDMorGM} from '@utils/channel';
 
 import type CategoryModel from '@typings/database/models/servers/category';
 import type ChannelModel from '@typings/database/models/servers/channel';
+
+const CHANNEL_ROW_HEIGHT = 64;
 
 type Props = {
     sortedChannels: ChannelModel[];

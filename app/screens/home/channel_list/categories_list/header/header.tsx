@@ -194,6 +194,7 @@ const ChannelListHeader = ({
                         </TouchableWithoutFeedback>
                     </View>
                     <View style={styles.subHeadingView}>
+                        {false &&
                         <Text
                             numberOfLines={1}
                             ellipsizeMode='tail'
@@ -202,6 +203,7 @@ const ChannelListHeader = ({
                         >
                             {serverDisplayName}
                         </Text>
+                        }
                         {pushProxyStatus !== PUSH_PROXY_STATUS_VERIFIED && (
                             <TouchableWithFeedback
                                 onPress={onPushAlertPress}

@@ -175,6 +175,7 @@ export async function markChannelAsViewed(serverUrl: string, channelId: string, 
         member.prepareUpdate((m) => {
             m.isUnread = false;
             m.mentionsCount = 0;
+            m.messageCount = 0;
             m.manuallyUnread = false;
             if (!onlyCounts) {
                 m.viewedAt = member.lastViewedAt;
@@ -404,7 +405,7 @@ export async function updateChannelsDisplayName(serverUrl: string, channels: Cha
                 const otherUserId = getUserIdFromChannelName(currentUser.id, channel.name);
                 const user = users.find((u) => u.id === otherUserId);
                 newDisplayName = displayUsername(user, currentUser.locale, displaySettings, false);
-            } else {
+            } else if (!channel.displayName) {
                 const dbProfiles = await queryUsersOnChannel(database, channel.id).fetch();
                 const profileIds = new Set(dbProfiles.map((p) => p.id));
                 const gmUsers = users.filter((u) => profileIds.has(u.id));

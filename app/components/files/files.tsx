@@ -26,6 +26,7 @@ type FilesProps = {
     isReplyPost: boolean;
     postId?: string;
     postProps?: Record<string, unknown>;
+    reverse?: boolean;
 }
 
 const MAX_VISIBLE_ROW_IMAGES = 4;
@@ -45,7 +46,7 @@ const styles = StyleSheet.create({
         opacity: 0.5,
     },
     marginTop: {
-        marginTop: 10,
+        marginTop: 5,
     },
 });
 
@@ -59,6 +60,7 @@ const Files = ({
     location,
     postId,
     postProps,
+    reverse,
 }: FilesProps) => {
     const galleryIdentifier = `${postId}-fileAttachments-${location}`;
     const [inViewPort, setInViewPort] = useState(false);
@@ -138,7 +140,7 @@ const Files = ({
 
         return (
             <View
-                style={[styles.row, {width: portraitPostWidth}]}
+                style={[styles.row, {width: portraitPostWidth}, reverse && {justifyContent: 'flex-end'}]}
                 testID='image-row'
             >
                 { renderItems(visibleImages, nonVisibleImagesCount, true) }

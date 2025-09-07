@@ -9,6 +9,7 @@ import {General} from '@constants';
 import {MM_TABLES} from '@constants/database';
 import {getTeammateNameDisplaySetting} from '@helpers/api/preference';
 import {sanitizeLikeString} from '@helpers/database';
+import {sortContact} from '@utils/user';
 
 import {queryDisplayNamePreferences} from './preference';
 import {observeCurrentUserId, observeLicense, getCurrentUserId, getConfig, getLicense, observeConfigValue} from './system';
@@ -149,4 +150,15 @@ export const getUsersFromDMSorted = async (database: Database, memberIds: string
     } catch (error) {
         return [];
     }
+};
+
+export const observeContacts = (database: Database) => {
+    const users = database.get<UserModel>(USER).query(Q.where('is_bot', Q.notEq(1))).observe();
+    const getProfiles = (list: UserModel[]) => {
+        return of$(list.map<UserProfile>((item) => item._raw as any));
+    };
+    return users.pipe(
+        switchMap(getProfiles),
+        switchMap((list) => of$(list.sort(sortContact))),
+    );
 };

@@ -3,11 +3,13 @@
 
 import React, {useCallback, useMemo} from 'react';
 import {defineMessages, type IntlShape, useIntl} from 'react-intl';
-import {FlatList, Keyboard, type ListRenderItemInfo, Platform, SectionList, type SectionListData, Text, View} from 'react-native';
+import {FlatList, Keyboard, type ListRenderItemInfo, Platform, SectionList, type SectionListData, Text, View, Linking, TouchableOpacity} from 'react-native';
 
 import {storeProfile} from '@actions/local/user';
+import CompassIcon from '@components/compass_icon';
 import Loading from '@components/loading';
 import NoResultsWithTerm from '@components/no_results_with_term';
+import UserItem from '@components/user_item';
 import UserListRow from '@components/user_list_row';
 import {General} from '@constants';
 import {useServerUrl} from '@context/server';
@@ -166,6 +168,13 @@ const getStyleFromTheme = makeStyleSheetFromTheme((theme) => {
             color: theme.centerChannelColor,
             ...typography('Body', 75, 'SemiBold'),
         },
+        contact: {
+            height: 48,
+            marginVertical: 16,
+        },
+        callIcon: {
+            color: theme.buttonBg,
+        },
     };
 });
 
@@ -251,6 +260,38 @@ export default function UserList({
 
         const isChAdmin = item.scheme_admin || false;
 
+        if (location === 'Contacts') {
+            const callButton = (
+                <TouchableOpacity
+                    onPress={async () => {
+                        const url = 'tel:' + item.username;
+                        const canOpen = await Linking.canOpenURL(url);
+                        if (canOpen) {
+                            await Linking.openURL(url);
+                        }
+                    }}
+                >
+                    <CompassIcon
+                        name='phone'
+                        size={24}
+                        style={style.callIcon}
+                    />
+                </TouchableOpacity>
+            );
+            return (
+                <UserItem
+                    key={item.id}
+                    containerStyle={style.contact}
+                    onUserLongPress={openUserProfile}
+                    onUserPress={handleSelectProfile}
+                    padding={20}
+                    rightDecorator={callButton}
+                    size={48}
+                    user={item}
+                />
+            );
+        }
+
         return (
             <UserListRow
                 key={item.id}
@@ -271,7 +312,7 @@ export default function UserList({
                 includeMargin={includeUserMargin}
             />
         );
-    }, [selectedIds, currentUserId, manageMode, handleSelectProfile, openUserProfile, showManageMode, tutorialWatched, includeUserMargin]);
+    }, [selectedIds, currentUserId, manageMode, handleSelectProfile, openUserProfile, showManageMode, tutorialWatched, includeUserMargin, location]);
 
     const renderLoading = useCallback(() => {
         if (!loading) {

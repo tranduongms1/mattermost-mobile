@@ -59,7 +59,7 @@ const Categories = ({
             return ['UNREADS' as const];
         }
 
-        const orderedCategories = [...categories];
+        const orderedCategories = categories.filter((c) => c.type !== 'channels');
         orderedCategories.sort((a, b) => a.sortOrder - b.sortOrder);
 
         if (unreadsOnTop) {
@@ -138,6 +138,7 @@ const Categories = ({
                     ref={listRef}
                     renderItem={renderCategory}
                     style={styles.mainList}
+                    contentContainerStyle={{paddingBottom: 64}}
                     showsHorizontalScrollIndicator={false}
                     showsVerticalScrollIndicator={false}
                     keyExtractor={extractKey}

@@ -52,7 +52,7 @@ export async function addReaction(serverUrl: string, postId: string, emojiName: 
 
         const currentUserId = await getCurrentUserId(database);
         const emojiAlias = getEmojiFirstAlias(emojiName);
-        const reacted = await queryReaction(database, emojiAlias, postId, currentUserId).fetchCount() > 0;
+        const reacted = false && await queryReaction(database, emojiAlias, postId, currentUserId).fetchCount() > 0;
         if (!reacted) {
             const reaction = await client.addReaction(currentUserId, postId, emojiAlias);
             const models: Model[] = [];
