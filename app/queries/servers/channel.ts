@@ -762,3 +762,7 @@ export const observeIsReadOnlyChannel = (database: Database, channelId: string) 
         switchMap(([c, u, readOnly]) => of$(isDefaultChannel(c) && !isSystemAdmin(u?.roles || '') && readOnly)),
     );
 };
+
+export const observeTechnicalChannels = (database: Database) => {
+    return database.get<ChannelModel>(CHANNEL).query(Q.where('name', Q.like('%ky-thuat'))).observe();
+};

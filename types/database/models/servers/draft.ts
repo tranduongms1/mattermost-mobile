@@ -28,6 +28,8 @@ declare class DraftModel extends Model {
 
     metadata?: PostMetadata;
 
+    props: Record<string, unknown> | null;
+
     /** update_at : The timestamp to when this post was last updated on the server */
     updateAt: number;
 }

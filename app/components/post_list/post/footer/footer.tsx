@@ -24,6 +24,7 @@ type Props = {
     participants: UserModel[];
     teamId?: string;
     thread: ThreadModel;
+    fromMe?: boolean;
 };
 
 const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
@@ -79,7 +80,7 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
     };
 });
 
-const Footer = ({channelId, location, participants, teamId, thread}: Props) => {
+const Footer = ({channelId, location, participants, teamId, thread, fromMe}: Props) => {
     const serverUrl = useServerUrl();
     const theme = useTheme();
     const styles = getStyleSheet(theme);
@@ -94,7 +95,7 @@ const Footer = ({channelId, location, participants, teamId, thread}: Props) => {
     let followButton;
     if (thread.replyCount) {
         repliesComponent = (
-            <>
+            <View style={{flexDirection: 'row'}}>
                 <View style={styles.replyIconContainer}>
                     <CompassIcon
                         name='reply-outline'
@@ -103,7 +104,7 @@ const Footer = ({channelId, location, participants, teamId, thread}: Props) => {
                     />
                 </View>
                 <FormattedText
-                    style={styles.replies}
+                    style={[styles.replies, fromMe && {marginRight: 0}]}
                     testID='post_footer.reply_count'
                     id='threads.replies'
                     defaultMessage='{count} {count, plural, one {reply} other {replies}}'
@@ -111,7 +112,7 @@ const Footer = ({channelId, location, participants, teamId, thread}: Props) => {
                         count: thread.replyCount,
                     }}
                 />
-            </>
+            </View>
         );
     }
     if (thread.isFollowing) {
@@ -161,14 +162,14 @@ const Footer = ({channelId, location, participants, teamId, thread}: Props) => {
             <UserAvatarsStack
                 channelId={channelId}
                 location={location}
-                style={styles.avatarsContainer}
+                style={[styles.avatarsContainer, fromMe && {marginLeft: 12, marginRight: 0}]}
                 users={participantsList}
             />
         );
     }
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, fromMe && {flexDirection: 'row-reverse'}]}>
             {userAvatarsStack}
             {repliesComponent}
             {followButton}

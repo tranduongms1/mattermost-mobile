@@ -13,15 +13,23 @@ export const CHANNEL = 'Channel';
 export const CHANNEL_ADD_MEMBERS = 'ChannelAddMembers';
 export const CHANNEL_BANNER = 'ChannelBanner';
 export const CHANNEL_BOOKMARK = 'ChannelBookmarkAddOrEdit';
+export const CHANNEL_DONE_TASKS = 'ChannelDoneTasks';
 export const CHANNEL_FILES = 'ChannelFiles';
 export const CHANNEL_INFO = 'ChannelInfo';
+export const CHANNEL_ISSUES = 'ChannelIssues';
 export const CHANNEL_NOTIFICATION_PREFERENCES = 'ChannelNotificationPreferences';
+export const CHANNEL_PLANS = 'ChannelPlans';
+export const CHANNEL_TROUBLES = 'ChannelTroubles';
 export const CODE = 'Code';
 export const CONTACTS = 'Contacts';
 export const CONVERT_GM_TO_CHANNEL = 'ConvertGMToChannel';
 export const CREATE_DIRECT_MESSAGE = 'CreateDirectMessage';
+export const CREATE_ISSUE = 'CreateIssue';
 export const CREATE_OR_EDIT_CHANNEL = 'CreateOrEditChannel';
+export const CREATE_PLAN = 'CreatePlan';
 export const CREATE_TEAM = 'CreateTeam';
+export const CREATE_TASK = 'CreateTask';
+export const CREATE_TROUBLE = 'CreateTrouble';
 export const COMPONENT_LIBRARY = 'ComponentLibrary';
 export const CUSTOM_STATUS = 'CustomStatus';
 export const CUSTOM_STATUS_CLEAR_AFTER = 'CustomStatusClearAfter';
@@ -43,16 +51,22 @@ export const INTEGRATION_SELECTOR = 'IntegrationSelector';
 export const INTERACTIVE_DIALOG = 'InteractiveDialog';
 export const INVITE = 'Invite';
 export const IN_APP_NOTIFICATION = 'InAppNotification';
+export const ISSUE = 'Issue';
 export const JOIN_TEAM = 'JoinTeam';
 export const LATEX = 'Latex';
 export const LOGIN = 'Login';
 export const MANAGE_CHANNEL_MEMBERS = 'ManageChannelMembers';
 export const MENTIONS = 'Mentions';
 export const MFA = 'MFA';
+export const MY_ISSUES = 'MyIssues';
+export const MY_PLANS = 'MyPlans';
+export const MY_TASKS = 'MyTasks';
+export const MY_TROUBLES = 'MyTroubles';
 export const ONBOARDING = 'Onboarding';
 export const PDF_VIEWER = 'PdfViewer';
 export const PERMALINK = 'Permalink';
 export const PINNED_MESSAGES = 'PinnedMessages';
+export const PLAN = 'Plan';
 export const POST_OPTIONS = 'PostOptions';
 export const POST_PRIORITY_PICKER = 'PostPriorityPicker';
 export const REACTIONS = 'Reactions';
@@ -82,11 +96,15 @@ export const SHARE_FEEDBACK = 'ShareFeedback';
 export const SNACK_BAR = 'SnackBar';
 export const SSO = 'SSO';
 export const TABLE = 'Table';
+export const TASK = 'Task';
+export const TASK_LIST = 'TaskList';
 export const TEAM_SELECTOR_LIST = 'TeamSelectorList';
+export const TECHNICAL_TASKS = 'TechnicalTasks';
 export const TERMS_OF_SERVICE = 'TermsOfService';
 export const THREAD = 'Thread';
 export const THREAD_FOLLOW_BUTTON = 'ThreadFollowButton';
 export const THREAD_OPTIONS = 'ThreadOptions';
+export const TROUBLE = 'Trouble';
 export const USER_PROFILE = 'UserProfile';
 
 export default {
@@ -102,16 +120,24 @@ export default {
     CHANNEL_ADD_MEMBERS,
     CHANNEL_BANNER,
     CHANNEL_BOOKMARK,
+    CHANNEL_DONE_TASKS,
     CHANNEL_FILES,
     CHANNEL_INFO,
+    CHANNEL_ISSUES,
     CHANNEL_NOTIFICATION_PREFERENCES,
+    CHANNEL_PLANS,
+    CHANNEL_TROUBLES,
     CODE,
     CONTACTS,
     CONVERT_GM_TO_CHANNEL,
     COMPONENT_LIBRARY,
     CREATE_DIRECT_MESSAGE,
+    CREATE_ISSUE,
     CREATE_OR_EDIT_CHANNEL,
+    CREATE_PLAN,
+    CREATE_TASK,
     CREATE_TEAM,
+    CREATE_TROUBLE,
     CUSTOM_STATUS,
     CUSTOM_STATUS_CLEAR_AFTER,
     DRAFT_SCHEDULED_POST_OPTIONS,
@@ -131,16 +157,22 @@ export default {
     INTERACTIVE_DIALOG,
     INVITE,
     IN_APP_NOTIFICATION,
+    ISSUE,
     JOIN_TEAM,
     LATEX,
     LOGIN,
     MANAGE_CHANNEL_MEMBERS,
     MENTIONS,
     MFA,
+    MY_ISSUES,
+    MY_PLANS,
+    MY_TASKS,
+    MY_TROUBLES,
     ONBOARDING,
     PDF_VIEWER,
     PERMALINK,
     PINNED_MESSAGES,
+    PLAN,
     POST_OPTIONS,
     POST_PRIORITY_PICKER,
     REACTIONS,
@@ -170,11 +202,15 @@ export default {
     SNACK_BAR,
     SSO,
     TABLE,
+    TASK,
+    TASK_LIST,
     TEAM_SELECTOR_LIST,
+    TECHNICAL_TASKS,
     TERMS_OF_SERVICE,
     THREAD,
     THREAD_FOLLOW_BUTTON,
     THREAD_OPTIONS,
+    TROUBLE,
     USER_PROFILE,
 } as const;
 

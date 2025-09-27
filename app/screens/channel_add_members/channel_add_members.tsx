@@ -210,7 +210,7 @@ export default function ChannelAddMembers({
     }, [theme, channel?.displayName, inModal, componentId]);
 
     const userFetchFunction = useCallback(async (page: number) => {
-        if (!channel) {
+        if (!channel || channel.type === General.GM_CHANNEL) {
             return [];
         }
 
@@ -228,7 +228,7 @@ export default function ChannelAddMembers({
         }
 
         const lowerCasedTerm = searchTerm.toLowerCase();
-        const results = await searchProfiles(serverUrl, lowerCasedTerm, {team_id: channel.teamId, not_in_channel_id: channel.id, allow_inactive: false});
+        const results = await searchProfiles(serverUrl, lowerCasedTerm, channel.type === General.GM_CHANNEL ? {} : {team_id: channel.teamId, not_in_channel_id: channel.id, allow_inactive: false});
 
         if (results.data) {
             return results.data;
