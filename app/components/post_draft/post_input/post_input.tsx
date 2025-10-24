@@ -83,6 +83,7 @@ const getPlaceHolder = (rootId?: string) => {
 const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => ({
     input: {
         color: theme.centerChannelColor,
+        flex: 1,
         fontSize: 15,
         lineHeight: 20,
         paddingHorizontal: 12,

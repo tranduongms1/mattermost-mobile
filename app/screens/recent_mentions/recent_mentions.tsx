@@ -10,6 +10,7 @@ import CompassIcon from '@components/compass_icon';
 import DateSeparator from '@components/post_list/date_separator';
 import PostWithChannelInfo from '@components/post_with_channel_info';
 import {Events, Screens} from '@constants';
+import {ExtraKeyboardProvider} from '@context/extra_keyboard';
 import {useServerUrl} from '@context/server';
 import {useTheme} from '@context/theme';
 import useAndroidHardwareBackHandler from '@hooks/android_back_handler';
@@ -44,6 +45,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flex: 1,
         justifyContent: 'center',
+        paddingVertical: 24,
     },
 });
 
@@ -150,28 +152,30 @@ const RecentMentionsScreen = ({
     }, [appsEnabled, customEmojiNames]);
 
     return (
-        <SafeAreaView
-            style={styles.flex}
-            edges={EDGES}
-            testID='recent_mentions.screen'
-        >
-            <View style={styles.container}>
-                <FlatList
-                    ListEmptyComponent={renderEmptyList()}
-                    data={posts}
-                    scrollToOverflowEnabled={true}
-                    showsVerticalScrollIndicator={false}
-                    scrollEventThrottle={16}
-                    indicatorStyle='black'
-                    onRefresh={handleRefresh}
-                    refreshing={refreshing}
-                    renderItem={renderItem}
-                    removeClippedSubviews={true}
-                    onViewableItemsChanged={onViewableItemsChanged}
-                    testID='recent_mentions.post_list.flat_list'
-                />
-            </View>
-        </SafeAreaView>
+        <ExtraKeyboardProvider>
+            <SafeAreaView
+                style={styles.flex}
+                edges={EDGES}
+                testID='recent_mentions.screen'
+            >
+                <View style={styles.container}>
+                    <FlatList
+                        ListEmptyComponent={renderEmptyList()}
+                        data={posts}
+                        scrollToOverflowEnabled={true}
+                        showsVerticalScrollIndicator={false}
+                        scrollEventThrottle={16}
+                        indicatorStyle='black'
+                        onRefresh={handleRefresh}
+                        refreshing={refreshing}
+                        renderItem={renderItem}
+                        removeClippedSubviews={true}
+                        onViewableItemsChanged={onViewableItemsChanged}
+                        testID='recent_mentions.post_list.flat_list'
+                    />
+                </View>
+            </SafeAreaView>
+        </ExtraKeyboardProvider>
     );
 };
 

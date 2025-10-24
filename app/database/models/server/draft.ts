@@ -42,6 +42,8 @@ export default class DraftModel extends Model implements DraftModelInterface {
 
     @json('metadata', identity) metadata?: PostMetadata;
 
+    @json('props', safeParseJSON) props!: any;
+
     /** update_at : The timestamp to when this post was last updated on the server */
     @field('update_at') updateAt!: number;
 }

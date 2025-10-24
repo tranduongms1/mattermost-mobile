@@ -85,6 +85,7 @@ const enhanced = withObservables(['channelId'], ({channelId, database}: OwnProps
 
     const isBookmarksEnabled = observeConfigBooleanValue(database, 'FeatureFlagChannelBookmarks');
     const canAddBookmarks = observeCanAddBookmarks(database, channelId);
+    const isTechnical = channel.pipe(switchMap((c) => of$(c?.type === 'G' && c?.name.endsWith('ky-thuat'))));
 
     return {
         canAddBookmarks,
@@ -96,6 +97,7 @@ const enhanced = withObservables(['channelId'], ({channelId, database}: OwnProps
         isCustomStatusEnabled,
         isCustomStatusExpired,
         isOwnDirectMessage,
+        isTechnical,
         memberCount,
         searchTerm,
         teamId,

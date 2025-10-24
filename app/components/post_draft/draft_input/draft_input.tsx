@@ -15,6 +15,7 @@ import {openAsBottomSheet} from '@screens/navigation';
 import {persistentNotificationsConfirmation} from '@utils/post';
 import {changeOpacity, makeStyleSheetFromTheme} from '@utils/theme';
 
+import EmojiAction from '../emoji_action';
 import PostInput from '../post_input';
 import QuickActions from '../quick_actions';
 import SendAction from '../send_button';
@@ -192,6 +193,7 @@ function DraftInput({
         });
     }, [handleSendMessage, intl, isTablet, scheduledPostsEnabled, theme]);
 
+    const canCreatePlan = channelType === 'G' && channelName?.endsWith('ky-thuat');
     const sendActionDisabled = !canSend || noMentionsError;
 
     return (
@@ -222,20 +224,31 @@ function DraftInput({
                         noMentionsError={noMentionsError}
                         postPriority={postPriority}
                     />
-                    <PostInput
-                        testID={postInputTestID}
-                        channelId={channelId}
-                        maxMessageLength={maxMessageLength}
-                        rootId={rootId}
-                        cursorPosition={cursorPosition}
-                        updateCursorPosition={updateCursorPosition}
-                        updateValue={updateValue}
-                        value={value}
-                        addFiles={addFiles}
-                        sendMessage={handleSendMessage}
-                        inputRef={inputRef}
-                        setIsFocused={setIsFocused}
-                    />
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                        <EmojiAction
+                            handleEmojiClick={(emoji) => {
+                                const emojiText = `:${emoji}: `;
+                                const newText = value.slice(0, cursorPosition) + emojiText + value.slice(cursorPosition);
+                                updateValue(newText);
+                                updateCursorPosition(cursorPosition + emojiText.length);
+                                focus();
+                            }}
+                        />
+                        <PostInput
+                            testID={postInputTestID}
+                            channelId={channelId}
+                            maxMessageLength={maxMessageLength}
+                            rootId={rootId}
+                            cursorPosition={cursorPosition}
+                            updateCursorPosition={updateCursorPosition}
+                            updateValue={updateValue}
+                            value={value}
+                            addFiles={addFiles}
+                            sendMessage={handleSendMessage}
+                            inputRef={inputRef}
+                            setIsFocused={setIsFocused}
+                        />
+                    </View>
                     <Uploads
                         currentUserId={currentUserId}
                         files={files}
@@ -252,6 +265,7 @@ function DraftInput({
                             value={value}
                             postPriority={postPriority}
                             updatePostPriority={updatePostPriority}
+                            canCreatePlan={canCreatePlan}
                             canShowPostPriority={canShowPostPriority}
                             focus={focus}
                         />

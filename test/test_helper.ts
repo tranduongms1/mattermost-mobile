@@ -646,6 +646,7 @@ class TestHelperSingleton {
             rootId: '',
             files: [],
             metadata: {},
+            props: null,
             updateAt: 0,
             ...overwrite,
         };

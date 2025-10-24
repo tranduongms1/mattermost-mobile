@@ -394,11 +394,12 @@ const Post = ({
                     channelId={post.channelId}
                     location={location}
                     thread={thread}
+                    fromMe={fromMe}
                 />
             );
         }
         if (thread.unreadMentions || thread.unreadReplies) {
-            unreadDot = (
+            unreadDot = false && (
                 <UnreadDot/>
             );
         }

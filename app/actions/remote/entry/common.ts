@@ -23,7 +23,7 @@ import {selectDefaultTeam} from '@helpers/api/team';
 import {DEFAULT_LOCALE} from '@i18n';
 import NetworkManager from '@managers/network_manager';
 import {getDeviceToken} from '@queries/app/global';
-import {getChannelById} from '@queries/servers/channel';
+import {getChannelById, prepareChannels} from '@queries/servers/channel';
 import {prepareEntryModels, prepareEntryModelsForDeletion, truncateCrtRelatedTables} from '@queries/servers/entry';
 import {getHasCRTChanged} from '@queries/servers/preference';
 import {getCurrentChannelId, getCurrentTeamId, getIsDataRetentionEnabled, getPushVerificationStatus, getLastFullSync, setCurrentTeamAndChannelId, getConfigValue} from '@queries/servers/system';
@@ -151,6 +151,13 @@ const entryRest = async (serverUrl: string, teamId?: string, channelId?: string,
                 chData.categories.push(...result.categories);
             }
         }
+        await client.doFetch(client.getUserRoute('me') + '/tasks/channels', {method: 'get'}, true).then((res) => {
+            for (const channel of res as unknown as Channel[]) {
+                if (!chData.channels?.some((c) => c.id === channel.id)) {
+                    chData.channels?.push(channel);
+                }
+            }
+        });
 
         fetchRoles(serverUrl, teamData.memberships, chData.memberships, meData.user, false, false, groupLabel);
 

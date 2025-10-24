@@ -9,6 +9,12 @@ export const VIEWPORT_IMAGE_REPLY_OFFSET = 11;
 export const VIEWPORT_IMAGE_ATTACHMENT_OFFSET = 31.5; // (2 * 12) MessageAttachment Padding + (2,5 + 5) AttachmentImage Padding
 export const MAX_RESOLUTION = 7680 * 4320; // 8K, ~33MPX
 
+export const AttitudeImages = [
+    require('@assets/images/emojis/attitude_1.png'),
+    require('@assets/images/emojis/attitude_2.png'),
+    require('@assets/images/emojis/attitude_3.png'),
+];
+
 export default {
     IMAGE_MAX_HEIGHT,
     IMAGE_MIN_DIMENSION,

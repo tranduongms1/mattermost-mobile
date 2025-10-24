@@ -38,7 +38,7 @@ const CameraType = ({onPress}: Props) => {
         const options: CameraOptions = {
             quality: 0.8,
             mediaType: 'photo',
-            saveToPhotos: true,
+            saveToPhotos: false,
         };
 
         await dismissBottomSheet();
@@ -49,7 +49,7 @@ const CameraType = ({onPress}: Props) => {
         const options: CameraOptions = {
             videoQuality: 'high',
             mediaType: 'video',
-            saveToPhotos: true,
+            saveToPhotos: false,
         };
 
         await dismissBottomSheet();

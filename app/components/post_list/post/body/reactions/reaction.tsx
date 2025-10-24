@@ -31,7 +31,7 @@ const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
         countHighlight: {
             color: theme.buttonBg,
         },
-        customEmojiStyle: {color: '#000'},
+        customEmojiStyle: {color: '#000', lineHeight: 20},
         emoji: {marginLeft: 4, marginRight: 2},
         highlight: {
             borderColor: theme.buttonBg,

@@ -261,6 +261,44 @@ export async function updateDraftPriority(serverUrl: string, channelId: string, 
     }
 }
 
+export async function updateDraftProps(serverUrl: string, channelId: string, rootId: string, patch: any, prepareRecordsOnly = false) {
+    try {
+        const {database, operator} = DatabaseManager.getServerDatabaseAndOperator(serverUrl);
+        const draft = await getDraft(database, channelId, rootId);
+        if (!draft) {
+            const newDraft: Draft = {
+                channel_id: channelId,
+                root_id: rootId,
+                message: patch.title,
+                props: patch,
+                update_at: Date.now(),
+            };
+
+            return operator.handleDraft({drafts: [newDraft], prepareRecordsOnly});
+        }
+
+        draft.prepareUpdate((d) => {
+            d.props = {
+                ...d.props,
+                ...patch,
+            };
+            if (patch.title) {
+                d.message = patch.title;
+            }
+            d.updateAt = Date.now();
+        });
+
+        if (!prepareRecordsOnly) {
+            await operator.batchRecords([draft], 'updateDraftProps');
+        }
+
+        return {draft};
+    } catch (error) {
+        logError('Failed updateDraftProps', error);
+        return {error};
+    }
+}
+
 export async function updateDraftMarkdownImageMetadata({
     serverUrl,
     channelId,

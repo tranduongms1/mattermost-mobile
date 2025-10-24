@@ -2,6 +2,7 @@
 // See LICENSE.txt for license information.
 
 import RNUtils from '@mattermost/rnutils';
+import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 import {applicationName} from 'expo-application';
 import {Alert, Linking, Platform, StatusBar} from 'react-native';
 import DocumentPicker, {type DocumentPickerResponse} from 'react-native-document-picker';
@@ -102,6 +103,19 @@ export default class FilePickerUtil {
         if (out.length > 0) {
             dismissBottomSheet();
             this.uploadFiles(out);
+            const savePromises = files.map(async (file) => {
+                if (
+                    Platform.OS === 'android' &&
+                    file.uri?.startsWith('file://')
+                ) {
+                    try {
+                        await CameraRoll.saveAsset(file.uri, {type: 'auto'});
+                    } catch (e) {
+                        logWarning('Failed to save to gallery', e);
+                    }
+                }
+            });
+            await Promise.all(savePromises);
         }
     };
 

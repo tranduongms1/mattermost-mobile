@@ -16,8 +16,12 @@ import Acknowledgements from './acknowledgements';
 import AddMembers from './add_members';
 import Content from './content';
 import Failed from './failed';
+import Issue from './issue';
 import Message from './message';
+import Plan from './plan';
 import Reactions from './reactions';
+import Task from './task';
+import Trouble from './trouble';
 
 import type PostModel from '@typings/database/models/servers/post';
 import type {SearchPattern} from '@typings/global/markdown';
@@ -155,6 +159,38 @@ const Body = ({
                 style={style.message}
                 id='post_body.deleted'
                 defaultMessage='(message deleted)'
+            />
+        );
+    } else if (post.type as string === 'custom_issue') {
+        message = (
+            <Issue
+                location={location}
+                post={post}
+                theme={theme}
+            />
+        );
+    } else if (post.type as string === 'custom_trouble') {
+        message = (
+            <Trouble
+                location={location}
+                post={post}
+                theme={theme}
+            />
+        );
+    } else if (post.type as string === 'custom_plan') {
+        message = (
+            <Plan
+                location={location}
+                post={post}
+                theme={theme}
+            />
+        );
+    } else if (post.type as string === 'custom_task') {
+        message = (
+            <Task
+                location={location}
+                post={post}
+                theme={theme}
             />
         );
     } else if (isPostAddChannelMember) {

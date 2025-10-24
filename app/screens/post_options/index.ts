@@ -78,7 +78,7 @@ const enhanced = withObservables([], ({combinedPost, post, showAddReaction, sour
     const channel = observeChannel(database, post.channelId);
     const channelIsArchived = channel.pipe(switchMap((ch: ChannelModel) => of$(ch.deleteAt !== 0)));
     const currentUser = observeCurrentUser(database);
-    const isLicensed = observeLicense(database).pipe(switchMap((lcs) => of$(lcs?.IsLicensed === 'true')));
+    const isLicensed = observeLicense(database).pipe(switchMap(() => of$(true)));
     const allowEditPost = observeConfigValue(database, 'AllowEditPost');
     const serverVersion = observeConfigValue(database, 'Version');
     const postEditTimeLimit = observeConfigIntValue(database, 'PostEditTimeLimit', -1);

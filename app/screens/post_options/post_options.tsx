@@ -22,6 +22,7 @@ import {isSystemMessage} from '@utils/post';
 import AppBindingsPostOptions from './options/app_bindings_post_option';
 import DeletePostOption from './options/delete_post_option';
 import EditOption from './options/edit_option';
+import JumpOption from './options/jump_option';
 import MarkAsUnreadOption from './options/mark_unread_option';
 import PinChannelOption from './options/pin_channel_option';
 import ReactionBar from './reaction_bar';
@@ -127,6 +128,12 @@ const PostOptions = ({
                     sourceScreen={sourceScreen}
                 />
                 }
+                {post.type && !post.rootId &&
+                    <JumpOption
+                        bottomSheetId={Screens.POST_OPTIONS}
+                        post={post}
+                    />
+                }
                 {canCopyPermalink &&
                 <CopyPermalinkOption
                     bottomSheetId={Screens.POST_OPTIONS}
@@ -161,7 +168,7 @@ const PostOptions = ({
                     canDelete={canDelete}
                 />
                 }
-                {canDelete &&
+                {canDelete && canEdit &&
                 <DeletePostOption
                     bottomSheetId={Screens.POST_OPTIONS}
                     combinedPost={combinedPost}

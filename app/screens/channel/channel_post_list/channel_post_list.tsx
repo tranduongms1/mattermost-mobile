@@ -120,7 +120,7 @@ const ChannelPostList = ({
             onEndReached={onEndReached}
             posts={posts}
             shouldShowJoinLeaveMessages={shouldShowJoinLeaveMessages}
-            showMoreMessages={true}
+            showMoreMessages={false}
             testID='channel.post_list'
         />
     );
