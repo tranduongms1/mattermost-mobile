@@ -16,6 +16,7 @@ import Account from './account';
 import Contacts from './contacts';
 import Home from './home';
 import Mentions from './mentions';
+import Notifications from './notifications';
 import SavedMessages from './saved_messages';
 import Search from './search';
 
@@ -65,6 +66,7 @@ const TabComponents: Record<string, any> = {
     Contacts,
     Home,
     Mentions,
+    Notifications,
     SavedMessages,
     Search,
 };

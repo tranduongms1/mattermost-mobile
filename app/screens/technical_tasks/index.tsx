@@ -5,7 +5,6 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {DeviceEventEmitter, Text, View} from 'react-native';
 
 import {getMyTaskCount} from '@actions/remote/task';
-import {handleWebSocketEvent} from '@actions/websocket/event';
 import OptionItem from '@components/option_item';
 import {Screens} from '@constants';
 import {useServerUrl} from '@context/server';
@@ -111,7 +110,8 @@ const TechnicalTasks = ({componentId}: Props) => {
 
     useEffect(() => {
         fetchData();
-        const client = WebsocketManager.getClient(serverUrl);
+        const client: any = WebsocketManager.getClient(serverUrl);
+        const callback = client.eventCallback;
         client?.setEventCallback((evt: WebSocketMessage) => {
             if (evt.event === 'posted') {
                 const post: Post = JSON.parse(evt.data.post);
@@ -119,11 +119,11 @@ const TechnicalTasks = ({componentId}: Props) => {
                     fetchData();
                 }
             }
-            handleWebSocketEvent(serverUrl, evt);
+            callback(serverUrl, evt);
         });
         const listener = DeviceEventEmitter.addListener('TASK_STATUS_UPDATED', fetchData);
         return () => {
-            client?.setEventCallback((evt: WebSocketMessage) => handleWebSocketEvent(serverUrl, evt));
+            client?.setEventCallback(callback);
             listener.remove();
         };
     }, [serverUrl]);

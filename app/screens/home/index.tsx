@@ -27,6 +27,7 @@ import {notificationError} from '@utils/notification';
 import Account from './account';
 import ChannelList from './channel_list';
 import Contacts from './contacts';
+import Notifications from './notifications';
 import Search from './search';
 import TabBar from './tab_bar';
 
@@ -188,6 +189,11 @@ export function HomeScreen(props: HomeProps) {
                         name={Screens.SEARCH}
                         component={Search}
                         options={{tabBarButtonTestID: 'tab_bar.search.tab', freezeOnBlur: true, lazy: true}}
+                    />
+                    <Tab.Screen
+                        name={Screens.NOTIFICATIONS}
+                        component={Notifications}
+                        options={{tabBarButtonTestID: 'tab_bar.notifications.tab', freezeOnBlur: true, lazy: true}}
                     />
                     <Tab.Screen
                         name={Screens.ACCOUNT}

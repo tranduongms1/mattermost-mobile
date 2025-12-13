@@ -3,7 +3,7 @@
 
 import React, {useCallback, useMemo, useState} from 'react';
 import {defineMessages, useIntl} from 'react-intl';
-import {Platform, StyleSheet, View} from 'react-native';
+import {Platform, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 import {makeDirectChannel} from '@actions/remote/channel';
@@ -12,7 +12,7 @@ import UserList from '@components/user_list';
 import {useServerUrl} from '@context/server';
 import {useTheme} from '@context/theme';
 import {alertErrorWithFallback} from '@utils/draft';
-import {changeOpacity, getKeyboardAppearanceFromTheme} from '@utils/theme';
+import {changeOpacity, getKeyboardAppearanceFromTheme, makeStyleSheetFromTheme} from '@utils/theme';
 import {displayUsername, filterProfilesMatchingTerm} from '@utils/user';
 
 const messages = defineMessages({
@@ -28,15 +28,18 @@ type Props = {
     teammateNameDisplay: string;
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    searchBar: {
-        marginLeft: 12,
-        marginRight: Platform.select({ios: 4, default: 12}),
-        marginVertical: 12,
-    },
+const getStyleSheet = makeStyleSheetFromTheme((theme: Theme) => {
+    return {
+        container: {
+            flex: 1,
+            backgroundColor: theme.centerChannelBg,
+        },
+        searchBar: {
+            marginLeft: 12,
+            marginRight: Platform.select({ios: 4, default: 12}),
+            marginVertical: 12,
+        },
+    };
 });
 
 export default function ContactsScreen({
@@ -49,6 +52,7 @@ export default function ContactsScreen({
     const intl = useIntl();
     const {formatMessage} = intl;
 
+    const styles = getStyleSheet(theme);
     const [term, setTerm] = useState('');
 
     const clearSearch = useCallback(() => {

@@ -62,6 +62,7 @@ export const MY_ISSUES = 'MyIssues';
 export const MY_PLANS = 'MyPlans';
 export const MY_TASKS = 'MyTasks';
 export const MY_TROUBLES = 'MyTroubles';
+export const NOTIFICATIONS = 'Notifications';
 export const ONBOARDING = 'Onboarding';
 export const PDF_VIEWER = 'PdfViewer';
 export const PERMALINK = 'Permalink';
@@ -168,6 +169,7 @@ export default {
     MY_PLANS,
     MY_TASKS,
     MY_TROUBLES,
+    NOTIFICATIONS,
     ONBOARDING,
     PDF_VIEWER,
     PERMALINK,

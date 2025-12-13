@@ -6,7 +6,6 @@ import {DeviceEventEmitter, Text, TouchableOpacity, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 import {fetchMyTasks, getMyTaskCount} from '@actions/remote/task';
-import {handleWebSocketEvent} from '@actions/websocket/event';
 import TaskList from '@components/task_list';
 import {useServerUrl} from '@context/server';
 import {useTheme} from '@context/theme';
@@ -101,7 +100,8 @@ function MyTasks({
 
     useEffect(() => {
         fetchCounts();
-        const client = WebsocketManager.getClient(serverUrl);
+        const client: any = WebsocketManager.getClient(serverUrl);
+        const callback = client.eventCallback;
         client?.setEventCallback((evt: WebSocketMessage) => {
             if (evt.event === 'posted') {
                 const post = JSON.parse(evt.data.post);
@@ -112,14 +112,14 @@ function MyTasks({
                     fetchCounts();
                 }
             }
-            handleWebSocketEvent(serverUrl, evt);
+            callback(serverUrl, evt);
         });
         const listener = DeviceEventEmitter.addListener('TASK_STATUS_UPDATED', fetchCounts);
         return () => {
-            client?.setEventCallback((evt: WebSocketMessage) => handleWebSocketEvent(serverUrl, evt));
+            client?.setEventCallback(callback);
             listener.remove();
         };
-    }, [serverUrl]);
+    }, [serverUrl, fetchCounts]);
 
     const filter = TABS[tabIndex];
 
